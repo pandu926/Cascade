@@ -4,13 +4,13 @@ milestone: v0.7
 milestone_name: milestone
 status: verifying
 stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-06-07T20:19:26.466Z"
+last_updated: "2026-06-07T20:29:07.108Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 50
 ---
 
@@ -30,7 +30,7 @@ Plan: 3 of 3
 Status: Phase complete — ready for verification
 Last activity: 2026-06-07
 
-Progress: [███████░░░] 71%
+Progress: [█████████░] 86%
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Progress: [███████░░░] 71%
 | Phase 01 P03 | 18 | 3 tasks | 1 files |
 | Phase 02 P01 | 9 | 2 tasks | 4 files |
 | Phase 03 P01 | 6 | 3 tasks | 6 files |
+| Phase 03 P02 | 4 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,8 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 3 Plan 01: inline ecrecover with EIP-2 malleability guard instead of OZ ECDSA (OZ not in lib/, ~15 guarded lines suffice)
 - [Phase ?]: Phase 3 Plan 01: validateUserOp returns 0/1 and never reverts on sig mismatch (reverting breaks EntryPoint simulation)
 - [Phase ?]: Phase 3 Plan 01: proxy-free CREATE2 account (no UUPS/ERC1967) — gas-lean per CONTEXT mandate
+- [Phase ?]: 03-02: Registered own skills on the live Cascade (price is internal/no getter) to control exact msg.value while keeping the real EntryPoint + Cascade bytecode
+- [Phase ?]: 03-02: Negative test matches FailedOp(0,'AA24 signature error') explicitly so a different revert fails loudly
 
 ### Pending Todos
 
@@ -102,6 +105,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T20:19:26.426Z
+Last session: 2026-06-07T20:28:42.504Z
 Stopped at: Completed 03-01-PLAN.md
 Resume file: None

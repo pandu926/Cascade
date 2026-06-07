@@ -59,7 +59,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The unchanged `Cascade.sol` processes the smart-account-driven royalties identically to the EOA path, confirming account-agnostic behavior
 **Plans**: 3 plans
 - [x] 03-01-PLAN.md — hand-written v0.7 interfaces + minimal CascadeAccount + CREATE2 AccountFactory, proven by TDD unit suite (AA-01, AA-02 machinery)
-- [ ] 03-02-PLAN.md — fork test: one self-bundled handleOps batches two invokes via the REAL EntryPoint v0.7, +negative AA24 +account-agnostic parity (AA-02, AA-03; primary proof)
+- [x] 03-02-PLAN.md — fork test: one self-bundled handleOps batches two invokes via the REAL EntryPoint v0.7, +negative AA24 +account-agnostic parity (AA-02, AA-03; primary proof)
 - [ ] 03-03-PLAN.md — GATED optional live step: pre-flight budget gate + direct account deploy + one live handleOps of existing skills, recorded in LIVE_RESULT.md (AA-03 bonus)
 
 ### Phase 4: Visualization, Docs & Submission
@@ -84,5 +84,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Recursive Royalty Core | 3/3 | Complete   | 2026-06-07 |
 | 2. Skill Packaging | 1/1 | Complete   | 2026-06-07 |
-| 3. Smart-Account Agents (ERC-4337) | 1/3 | In Progress|  |
+| 3. Smart-Account Agents (ERC-4337) | 2/3 | In Progress|  |
 | 4. Visualization, Docs & Submission | 0/TBD | Not started | - |
