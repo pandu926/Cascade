@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.7
 milestone_name: milestone
-status: executing
+status: verifying
 stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-06-07T22:00:15.933Z"
+last_updated: "2026-06-07T22:08:56.614Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 10
-  completed_plans: 9
-  percent: 50
+  completed_plans: 10
+  percent: 67
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 Phase: 4 (Contract Hardening & Security Review) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-07
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [█████████░] 90%
 | Phase 03 P03 | 9 | 2 tasks | 2 files |
 | Phase 04 P01 | 11m | 4 tasks | 7 files |
 | Phase 04 P02 | 6 | 3 tasks | 4 files |
+| Phase 04 P03 | 18 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,8 @@ Recent decisions affecting current work:
 - [Phase ?]: 03-02: Negative test matches FailedOp(0,'AA24 signature error') explicitly so a different revert fails loudly
 - [Phase ?]: 03-03: Live 4337 step gated by a STOP-clean pre-flight budget gate — at the node's real 10 gwei it blocks (est 0.0188 vs 0.0043 PHRS); no half-spend. AA-01/02/03 already met by the Wave 2 fork proof.
 - [Phase ?]: 03-03: Live step deploys CascadeAccount directly (skip factory) per RESEARCH §8 to shrink footprint; prices from env (Cascade.skills internal), Cascade msg.value==price is the on-chain fail-safe.
+- [Phase ?]: HARD-03: slither 0.11.5 ran clean over Cascade + AA (0 CRITICAL/HIGH); 7 LOW/info findings all Accepted by-design in SECURITY.md
+- [Phase ?]: SECURITY.md flags an independent professional audit as the one remaining step before mainnet custody of real user value
 
 ### Pending Todos
 
@@ -110,6 +113,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T21:59:59.398Z
+Last session: 2026-06-07T22:08:47.693Z
 Stopped at: Completed 03-01-PLAN.md
 Resume file: None
