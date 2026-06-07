@@ -4,13 +4,13 @@ milestone: v0.7
 milestone_name: milestone
 status: executing
 stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-06-07T18:42:29.654Z"
+last_updated: "2026-06-07T18:51:24.307Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 01 (Recursive Royalty Core) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-06-07
 
-Progress: [███░░░░░░░] 33%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [███░░░░░░░] 33%
 
 *Updated after each plan completion*
 | Phase 01 P01 | 18 | 3 tasks | 5 files |
+| Phase 01 P02 | 12 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,8 @@ Recent decisions affecting current work:
 - Phase 3: ERC-4337 via self-bundle (`handleOps()` from EOA) — no public bundler on Pharos
 - [Phase ?]: Phase 1 Plan 01: per-level remainder credited to that level's creator (exact wei conservation, no separate dust pass)
 - [Phase ?]: Phase 1 Plan 01: monotonic skill ids + strictly-smaller dep refs make cycles impossible by construction (no runtime DFS)
+- [Phase ?]: Phase 1 Plan 02: forge scripts read all params via vm.env*; RPC resolved via --rpc-url flag (no hardcoded endpoint)
+- [Phase ?]: Phase 1 Plan 02: DemoTree keys default to anvil mnemonic so local runs are pre-funded; env overrides for the live wave (same code, only flags differ)
 
 ### Pending Todos
 
@@ -87,6 +90,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T18:42:29.623Z
+Last session: 2026-06-07T18:50:54.939Z
 Stopped at: Completed 01-01-PLAN.md
 Resume file: None

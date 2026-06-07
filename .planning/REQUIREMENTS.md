@@ -26,12 +26,12 @@
 - [ ] **SKILL-01**: `SKILL.md` with YAML frontmatter exposing register / invoke / claim as natural-language agent actions
 - [ ] **SKILL-02**: `references/` files with command templates + error handling per action (mirrors official engine layout)
 - [ ] **SKILL-03**: `assets/networks.json` supporting both atlantic-testnet and mainnet
-- [ ] **SKILL-04**: Forge scripts for register / invoke / claim
+- [x] **SKILL-04**: Forge scripts for register / invoke / claim
 
 ### Demo — Proof
 
-- [ ] **DEMO-01**: 3 toy skills deployed to testnet forming a dependency tree (A→B→C)
-- [ ] **DEMO-02**: End-to-end demo script: one invoke, show 3 separate creator balances rise on-chain
+- [x] **DEMO-01**: 3 toy skills deployed to testnet forming a dependency tree (A→B→C)
+- [x] **DEMO-02**: End-to-end demo script: one invoke, show 3 separate creator balances rise on-chain
 - [ ] **DEMO-03**: Web visualization — dependency tree + animated money flowing up the tree
 - [ ] **DEMO-04**: README with setup/usage instructions
 - [ ] **DEMO-05**: Demo video
@@ -70,9 +70,9 @@
 | SKILL-01 | Phase 2 | Pending |
 | SKILL-02 | Phase 2 | Pending |
 | SKILL-03 | Phase 2 | Pending |
-| SKILL-04 | Phase 1 | Pending |
-| DEMO-01 | Phase 1 | Pending |
-| DEMO-02 | Phase 1 | Pending |
+| SKILL-04 | Phase 1 | Complete |
+| DEMO-01 | Phase 1 | Complete |
+| DEMO-02 | Phase 1 | Complete |
 | DEMO-03 | Phase 4 | Pending |
 | DEMO-04 | Phase 4 | Pending |
 | DEMO-05 | Phase 4 | Pending |
