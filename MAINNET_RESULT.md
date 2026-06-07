@@ -259,3 +259,84 @@ After funding, the account held `7800000000000000` wei (`0.0078` PROS) = EntryPo
 - Factory deploy tx: https://www.pharosscan.xyz/tx/0x0adbda11005db958e3f8a86681aab2188303efa8ba46d31094d9d19a4d2b5055
 - createAccount tx: https://www.pharosscan.xyz/tx/0x316dfbf86135e7ed5838125be06be6301bafb61819d74f43cc32c8bfbb5515f2
 - Funding tx: https://www.pharosscan.xyz/tx/0x0966005d410f247ac0d1da967aa31985ec78784d88275080d890ca78d3ef3320
+
+### The self-bundled handleOps (ONE tx settled TWO invokes)
+
+ONE `PackedUserOperation` was built, signed (eth-signed-prefixed `ep.getUserOpHash`, owner ECDSA), and self-bundled by the EOA: `ep.handleOps([op], payable(0x3306…))`. Its `callData = executeBatch([CASCADE, CASCADE], [0, 1000000000000000], [invoke(2), invoke(3)])` — two `Cascade.invoke` calls in a single UserOp, sender = the smart account `0xfe93…`. `initCode` was empty (the account was already deployed via `createAccount`).
+
+| Field | Value |
+|-------|-------|
+| **handleOps tx hash** | **`0x1f3cec937acec167db716adf10be50bf135ac08f9ba3f02974cc0ee524375f90`** |
+| to | EntryPoint v0.7 `0x0000000071727De22E5E9d8BAf0edAc6f37da032` |
+| Block number | `9631209` |
+| Receipt status | `1` (success) |
+| Gas used | `205868` |
+| UserOp sender (payer of both invokes) | smart account `0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1` |
+| Beneficiary (fee recipient) | broadcaster EOA `0x3306E846b5Dc7F890436955999CeE27a6abbCbe8` |
+| Batched skills | id `2` (B, price `0`) + id `3` (C, price `1000000000000000` = 0.001 PROS) |
+
+**Events in the single handleOps receipt** (decoded from `cast receipt`): `1` EntryPoint `UserOperationEvent`, **`2` Cascade `Invoked`** (skillId 2 payer `0xfe93…` value 0; skillId 3 payer `0xfe93…` value 1e15), and **`3` `RoyaltyAccrued`** (C's fan-out crediting A/B/C). Two invokes settled in ONE transaction through the real EntryPoint — account-agnostic parity with the MAIN-02 EOA path, now via a smart account.
+
+### Creator balance deltas (ONE UserOp → creators paid)
+
+`balances(creator)` read via `cast call` before and after the single handleOps:
+
+| Creator | id | before (wei) | after (wei) | delta (wei) | delta (PROS) |
+|---------|----|-------------|-------------|-------------|--------------|
+| A (leaf) | 1 | `200000000000000` | `400000000000000` | `200000000000000` | `0.0002` |
+| B (dep A 40%) | 2 | `300000000000000` | `600000000000000` | `300000000000000` | `0.0003` |
+| C (dep B 50%) | 3 | `500000000000000` | `1000000000000000` | `500000000000000` | `0.0005` |
+| **Σ** | | | | **`1000000000000000`** | **`0.001`** |
+
+Both invoked skills' creators rose: **B (id2) +0.0003 and C (id3) +0.0005**. A (+0.0002) rose via C's recursive fan-out. **Conservation holds:** Σ(deltas) == `1000000000000000` wei == `PRICE_C` (the value the account forwarded for `invoke(3)`); `invoke(2)` carried value 0 (B is a free skill), so it credited nothing new — its `Invoked` event is the on-chain proof the second batched call executed.
+
+`RoyaltyAccrued` events decoded from the handleOps receipt:
+
+| skillId | creator | amount (wei) |
+|---------|---------|--------------|
+| `1` | `0x7ca05d52eb17833e802b7d2ec7f1fc23950c56b8` | `200000000000000` |
+| `2` | `0xd79f121ac383e3e7f2aeea6aeb3b700e2fb6796b` | `300000000000000` |
+| `3` | `0xece4bbabd00c22e1baa1de7f83e152d0eb6d12ef` | `500000000000000` |
+
+### Deployer balance (MAIN-03)
+
+| Point | PROS |
+|-------|------|
+| Before MAIN-03 (= after MAIN-02) | `1.931603440000000000` |
+| After factory + account + funding + failed handleOps (block 9631013) | `1.909581770000000000` |
+| After successful retry (createAccount idempotent + handleOps, block 9631209) | `1.909707750000000000` |
+
+(The deployer balance *rose* slightly on the successful retry because, as the `handleOps` beneficiary, the EOA was refunded the EntryPoint-collected gas fee from the account's prefund deposit — the account's `7.8e15` wei drained to `0`: `1e15` to Cascade for `invoke(3)`, the remainder consumed as gas/prefund.)
+
+### First handleOps attempt — diagnosed and resolved (no half-spend)
+
+The first broadcast's `handleOps` reverted with EntryPoint custom error **`AA95 out of gas`** (tx `0x48fce20a3975a177823de86700db82d20df8bfdda0947de4f827cbbfcfeb2b32`, status `0`, block `9631013`). Root cause: `forge script` sized the broadcast tx's gas from `eth_estimateGas` (~260k), below the EntryPoint's AA95 floor, which requires the outer bundler tx to forward at least `verificationGasLimit + callGasLimit + preVerificationGas` (200k + 400k + 80k = 680k) to the inner op. The op's *validation* succeeded (ecrecover returned the owner, prefund deposited) — only the outer gas ceiling tripped.
+
+**Crucially, the failed tx fully rolled back** (verified on-chain post-failure): account nonce stayed `0`, EntryPoint deposit `0`, account balance intact at `7.8e15` wei — **no half-spend of any invoke value, creator balances unchanged.** The factory and account were already deployed (those txs succeeded independently). The fix was to force the bundler tx to carry enough gas via `--gas-estimate-multiplier 500` and re-run reusing the deployed factory (`FACTORY` env → idempotent `createAccount` returns the funded account, funding auto-skips). The retry settled cleanly (the successful handleOps above).
+
+| First attempt | Value |
+|---------------|-------|
+| Failed handleOps tx | `0x48fce20a3975a177823de86700db82d20df8bfdda0947de4f827cbbfcfeb2b32` (status `0`, `AA95 out of gas`) |
+| Rollback verified | nonce `0`, deposit `0`, account balance `7.8e15` intact — no half-spend |
+| Fix | `--gas-estimate-multiplier 500` so the bundler tx clears the EntryPoint AA95 floor (~680k forwarded gas) |
+
+### MAIN-03 explorer links
+
+- **handleOps (the self-bundled 2-invoke batch):** https://www.pharosscan.xyz/tx/0x1f3cec937acec167db716adf10be50bf135ac08f9ba3f02974cc0ee524375f90
+- Failed first attempt (AA95, rolled back): https://www.pharosscan.xyz/tx/0x48fce20a3975a177823de86700db82d20df8bfdda0947de4f827cbbfcfeb2b32
+- EntryPoint v0.7: https://www.pharosscan.xyz/address/0x0000000071727De22E5E9d8BAf0edAc6f37da032
+- Smart account: https://www.pharosscan.xyz/address/0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1
+
+**MAIN-03 status:** ✅ **Complete.** A live mainnet smart account batched two `Cascade.invoke` calls into ONE self-bundled `handleOps` through the real EntryPoint v0.7 (status 1); both invoked skills' creators rose, Σ deltas == PRICE_C exactly. The account is the `msg.sender` of both invokes — account-agnostic parity with the EOA path, with real money. Every spend was pre-flight gated; the one transient AA95 failure rolled back fully (no half-spend) and was resolved by raising the bundler tx gas.
+
+---
+
+## Phase 5 Complete — all three headline artifacts live on mainnet
+
+| Req | Artifact | Key on-chain proof |
+|-----|----------|--------------------|
+| MAIN-01 | Cascade deployed + source-verified | `0x31bE4C6B5711913D818e377ebd809d4397FF3c84`, deploy tx `0x4fc8db37…`, RANK-1 verified |
+| MAIN-02 | Recursive royalty demo | invoke tx `0x5ba20c87…` — one invoke paid 3 creators, Σ == 0.001 PROS |
+| MAIN-03 | Self-bundled 4337 batch | handleOps tx `0x1f3cec93…` — one UserOp batched 2 invokes via the real EntryPoint v0.7 |
+
+This file (`MAINNET_RESULT.md`) is the single source of truth for Phase 6 (visualization / docs / submission).
