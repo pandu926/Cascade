@@ -113,6 +113,27 @@ contract SmartAccountForkTest is Test {
         return abi.encodeWithSelector(CascadeAccount.executeBatch.selector, dest, val, fn);
     }
 
+    /// @dev callData = executeBatch([cascade],[price],[invoke(id)]) — single-element batch.
+    function _singleInvoke(uint256 id, uint256 price) internal pure returns (bytes memory) {
+        address[] memory dest = new address[](1);
+        dest[0] = address(CASCADE);
+        uint256[] memory val = new uint256[](1);
+        val[0] = price;
+        bytes[] memory fn = new bytes[](1);
+        fn[0] = abi.encodeWithSelector(Cascade.invoke.selector, id);
+        return abi.encodeWithSelector(CascadeAccount.executeBatch.selector, dest, val, fn);
+    }
+
+    /// @dev Wrap a single op into the ops[] array `handleOps` expects.
+    function _ops(PackedUserOperation memory op)
+        internal
+        pure
+        returns (PackedUserOperation[] memory ops)
+    {
+        ops = new PackedUserOperation[](1);
+        ops[0] = op;
+    }
+
     // --- Task 1: happy path -------------------------------------------------
 
     /// @notice ONE self-bundled `handleOps` through the REAL EntryPoint v0.7 makes the
@@ -143,14 +164,11 @@ contract SmartAccountForkTest is Test {
             ownerPk
         );
 
-        PackedUserOperation[] memory ops = new PackedUserOperation[](1);
-        ops[0] = op;
-
         uint256 before1 = CASCADE.balances(creator1);
         uint256 before2 = CASCADE.balances(creator2);
 
         // EOA self-bundles: this contract is the beneficiary (collects gas fees).
-        EP.handleOps(ops, payable(address(this)));
+        EP.handleOps(_ops(op), payable(address(this)));
 
         uint256 delta1 = CASCADE.balances(creator1) - before1;
         uint256 delta2 = CASCADE.balances(creator2) - before2;
@@ -159,6 +177,101 @@ contract SmartAccountForkTest is Test {
         assertEq(delta1, price1, "creator1 balance rose by price1");
         assertEq(delta2, price2, "creator2 balance rose by price2");
         assertEq(delta1 + delta2, price1 + price2, "sum of deltas == both prices");
+    }
+
+    /// @notice Named alias asserting the op settles through the REAL EntryPoint v0.7 —
+    ///         the canonical AA-03 settlement proof (artifact contract: this name must
+    ///         exist). Single-op handleOps deploys + invokes; the creator balance rises.
+    function test_handleOps_settles_via_real_entrypoint() public {
+        (address owner, uint256 ownerPk) = makeAddrAndKey("owner-settle");
+        address creator = makeAddr("creator-settle");
+        uint256 price = 0.0015 ether;
+        uint256 id = _registerLeaf(creator, price);
+
+        address sender = factory.getAddress(owner, 0);
+        vm.deal(sender, 100 ether);
+
+        PackedUserOperation memory op =
+            _buildSignedOp(sender, _initCode(owner, 0), _singleInvoke(id, price), ownerPk);
+
+        uint256 before = CASCADE.balances(creator);
+        EP.handleOps(_ops(op), payable(address(this)));
+
+        assertGt(sender.code.length, 0, "settled: account deployed via real EntryPoint");
+        assertEq(CASCADE.balances(creator) - before, price, "settled: creator credited via real EntryPoint");
+    }
+
+    // --- Task 2: negative AA24 (wrong signer) ------------------------------
+
+    /// @notice A UserOp identical to the happy path but signed by a NON-owner key is
+    ///         rejected: validateUserOp returns 1, the EntryPoint reverts FailedOp with
+    ///         the "AA24 signature error" reason, nothing settles, and the target
+    ///         creator's balance is unchanged (T-03-05: wrong signer cannot settle).
+    function test_handleOps_rejects_wrong_signer() public {
+        (address owner,) = makeAddrAndKey("owner-neg");
+        (, uint256 attackerPk) = makeAddrAndKey("attacker");
+        address creator = makeAddr("creator-neg");
+        uint256 price = 0.001 ether;
+        uint256 id = _registerLeaf(creator, price);
+
+        address sender = factory.getAddress(owner, 0);
+        vm.deal(sender, 100 ether);
+
+        // Same op (owner is the account owner), but signed by the ATTACKER key.
+        PackedUserOperation memory op =
+            _buildSignedOp(sender, _initCode(owner, 0), _singleInvoke(id, price), attackerPk);
+
+        uint256 before = CASCADE.balances(creator);
+
+        // EntryPoint surfaces FailedOp(0, "AA24 signature error"). Match the AA24 reason
+        // explicitly so a different revert (e.g. AA21/AA13) fails the test loudly.
+        vm.expectRevert(
+            abi.encodeWithSignature("FailedOp(uint256,string)", uint256(0), "AA24 signature error")
+        );
+        EP.handleOps(_ops(op), payable(address(this)));
+
+        assertEq(sender.code.length, 0, "rejected op must NOT deploy the account");
+        assertEq(CASCADE.balances(creator), before, "rejected op must NOT credit the creator");
+    }
+
+    // --- Task 2: account-agnostic parity (CORE-07) -------------------------
+
+    /// @notice The smart-account invoke path credits creators IDENTICALLY to a direct
+    ///         EOA invoke of the same skill — Cascade.sol is unchanged and treats both
+    ///         caller types the same. Two equal-priced sibling skills (same shape) are
+    ///         used so the only difference is the caller (smart account vs EOA).
+    function test_account_agnostic_parity() public {
+        uint256 price = 0.001 ether;
+
+        // Two structurally-identical leaf skills, distinct creators.
+        address creatorSa = makeAddr("creator-sa");
+        address creatorEoa = makeAddr("creator-eoa");
+        uint256 idSa = _registerLeaf(creatorSa, price);
+        uint256 idEoa = _registerLeaf(creatorEoa, price);
+
+        // (a) Smart-account path: one single-element executeBatch via handleOps.
+        (address owner, uint256 ownerPk) = makeAddrAndKey("owner-parity");
+        address sender = factory.getAddress(owner, 0);
+        vm.deal(sender, 100 ether);
+
+        PackedUserOperation memory op =
+            _buildSignedOp(sender, _initCode(owner, 0), _singleInvoke(idSa, price), ownerPk);
+
+        uint256 saBefore = CASCADE.balances(creatorSa);
+        EP.handleOps(_ops(op), payable(address(this)));
+        uint256 saDelta = CASCADE.balances(creatorSa) - saBefore;
+
+        // (b) Direct EOA path: a plain invoke{value} of the sibling skill.
+        address eoa = makeAddr("plain-eoa");
+        vm.deal(eoa, price);
+        uint256 eoaBefore = CASCADE.balances(creatorEoa);
+        vm.prank(eoa);
+        CASCADE.invoke{value: price}(idEoa);
+        uint256 eoaDelta = CASCADE.balances(creatorEoa) - eoaBefore;
+
+        // Parity: the smart-account-driven invoke credits exactly like the EOA invoke.
+        assertEq(saDelta, price, "smart-account invoke credits full price");
+        assertEq(saDelta, eoaDelta, "smart-account delta == EOA delta (account-agnostic)");
     }
 
     receive() external payable {}
