@@ -58,7 +58,7 @@ Single source of truth for the Phase 5 mainnet artifacts (chainId **1672**, nati
 
 ## Verification
 
-**Status:** ✅ **Verified** on the first attempt (RANK 1 — Blockscout verifier, no API key). Not a fallback; source is confirmed `Pass - Verified` on the SocialScan command API backing pharosscan.
+**Status:** ✅ **Verified** (RANK 1 — Blockscout verifier, no API key, first attempt). Confirmation basis: a second `forge verify-contract` submit returns the backend guard **"This contract is verified"** (status=0) — the standard SocialScan/Blockscout response for an already-verified address, which is the authoritative signal that the source is on file. NOTE: the SocialScan *read* command-API actions (`getabi`, `getsourcecode`) are broken/unsupported on this deployment (they return "not verified" / "the action is error" for every address), so they CANNOT be used to confirm status programmatically — the authoritative visual check is the pharosscan contract UI (Code tab). Treat the "already verified" submit-guard as the confirmation of record.
 
 | Field | Value |
 |-------|-------|
@@ -88,3 +88,5 @@ forge verify-contract 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 src/Cascade.sol
 - SocialScan API record: https://api.socialscan.io/pharos-mainnet/v1/explorer/command_api/address/0x31be4c6b5711913d818e377ebd809d4397ff3c84
 
 Verification spent no PROS (submit-only, public source) and did not alter the deployed contract.
+
+> **Residual check for submission (Phase 6):** Before submitting, a human should open the pharosscan contract UI Code tab and confirm the green "Verified" checkmark visually — the read command-API cannot confirm it programmatically. **VISUAL CHECK PENDING.**
