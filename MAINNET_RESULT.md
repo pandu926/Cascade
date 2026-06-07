@@ -127,3 +127,83 @@ Each funded `0.02` PROS from the deployer via `cast send <creator> --value 0.02e
 - Creator A address: https://www.pharosscan.xyz/address/0x7ca05d52EB17833E802B7D2eC7f1Fc23950c56b8
 - Creator B address: https://www.pharosscan.xyz/address/0xD79F121Ac383e3e7f2aeEa6AEb3b700e2Fb6796b
 - Creator C address: https://www.pharosscan.xyz/address/0xECe4BBabd00c22E1baA1dE7f83E152D0eB6D12ef
+
+### Pre-broadcast guard (Task 2, before any register/invoke broadcast)
+
+This is the safeguard that prevents `DemoTree.s.sol`'s silent `if (existing == address(0)) new Cascade()` fresh-deploy fallback from ever firing on real money. All three checks passed **before** any spend:
+
+| Guard | Result |
+|-------|--------|
+| `cast chain-id --rpc-url mainnet` == 1672 | ✅ `1672` |
+| `cast code 0x31bE…3c84 --rpc-url mainnet` non-empty (>2 chars) | ✅ `4231` hex chars |
+| Deployer balance ≥ safe margin | ✅ `1.933876190000000000` PROS |
+| `skillCount()` before demo | `0` (snapshot for the 0→3 reuse proof) |
+
+Because the guard confirmed live bytecode at the address, the demo ran via discrete `cast send` calls against the **reused** Cascade (not `forge script`, per the prior-phase finding that `forge script` ignored `--gas-price` and risked a failed CREATE — the same finding that motivated `forge create` in MAIN-01). `CASCADE` was treated as the fixed reuse target; `skillCount` going `0 → 3` is the on-chain proof no redeploy occurred.
+
+### A→B→C registration (each from its own creator EOA)
+
+Tree shape (identical to `script/DemoTree.s.sol` constants): A leaf price 0 · B depends on A at 4000 bps (40%) · C depends on B at 5000 bps (50%), price `0.001` PROS.
+
+| Skill | id | register call | signer | tx hash | receipt |
+|-------|----|--------------|--------|---------|---------|
+| A (leaf) | `1` | `register(0, [], [])` | CREATOR_A | `0x24deaf09ba46324fb1be0499faa349fb4c33bb769a3330627af63447e8a8e976` | status `1` |
+| B (dep A 40%) | `2` | `register(0, [1], [4000])` | CREATOR_B | `0x11f9705b2f108bbf90e8eb03c692e56a2fc452d64afe6239e0a660a4f5afeb45` | status `1` |
+| C (dep B 50%, price 1e15) | `3` | `register(1000000000000000, [2], [5000])` | CREATOR_C | `0x9411f8b5f4fcf53189591b7365e4ace768a0a05b1dbd319784c51dae60fd1da6` | status `1` |
+
+**Reuse proof:** `skillCount()` went `0 → 3` on `0x31bE4C6B5711913D818e377ebd809d4397FF3c84` — the MAIN-01 contract, NOT a redeploy.
+
+### Single payer invoke of C (the recursive fan-out)
+
+| Field | Value |
+|-------|-------|
+| Call | `invoke(3)` with `msg.value = 0.001 ether` (1e15 wei, exact — else `WrongValue` revert) |
+| Signer | deployer/payer `0x3306E846b5Dc7F890436955999CeE27a6abbCbe8` |
+| Invoke tx hash | `0x5ba20c8771787ff4bc4ea5c938fa32a394f4c1103318b7cfe0039f19dd3b1564` |
+| Receipt status | `1` (success) |
+| Gas used | `127275` |
+
+### Creator balance deltas (one invoke → three creators paid)
+
+`balances(creator)` read via `cast call` before and after the single invoke:
+
+| Creator | id | before (wei) | after (wei) | delta (wei) | delta (PROS) | of PRICE_C |
+|---------|----|-------------|-------------|-------------|--------------|-----------|
+| A | 1 | `0` | `200000000000000` | `200000000000000` | `0.0002` | 20% |
+| B | 2 | `0` | `300000000000000` | `300000000000000` | `0.0003` | 30% |
+| C | 3 | `0` | `500000000000000` | `500000000000000` | `0.0005` | 50% |
+| **Σ** | | | | **`1000000000000000`** | **`0.001`** | **100%** |
+
+**Conservation holds exactly:** Σ(deltas) == `1000000000000000` wei == `PRICE_C` (0.001 PROS). All three balances rose; every wei of the payment was assigned across the tree (no dust, no leak).
+
+Split math: C keeps 50% (`0.0005`); 50% routes into B's subtree. B keeps 60% of that slice (`0.0003`); 40% routes into A. A (leaf) absorbs the remainder (`0.0002`).
+
+### RoyaltyAccrued events decoded from the invoke receipt
+
+Three `RoyaltyAccrued(uint256 indexed skillId, address indexed creator, uint256 amount)` logs, one per credited tree level:
+
+| skillId | creator | amount (wei) | amount (PROS) |
+|---------|---------|--------------|---------------|
+| `1` | `0x7ca05d52eb17833e802b7d2ec7f1fc23950c56b8` | `200000000000000` | `0.0002` |
+| `2` | `0xd79f121ac383e3e7f2aeea6aeb3b700e2fb6796b` | `300000000000000` | `0.0003` |
+| `3` | `0xece4bbabd00c22e1baa1de7f83e152d0eb6d12ef` | `500000000000000` | `0.0005` |
+
+(topic0 = `keccak("RoyaltyAccrued(uint256,address,uint256)")` = `0xfb8f4e83813fe02fd9681ce96e86d71ecc921ea9aacaaa3760d4d78c9b2c0f69`.)
+
+### Demo balances summary (deployer)
+
+| Point | PROS |
+|-------|------|
+| Before MAIN-02 (= after MAIN-01) | `1.994506190000000000` |
+| After 3× 0.02 stipends | `1.933876190000000000` |
+| After register×3 + invoke (incl. 0.001 PRICE_C value) | `1.931603440000000000` |
+
+### MAIN-02 explorer links
+
+- Register A: https://www.pharosscan.xyz/tx/0x24deaf09ba46324fb1be0499faa349fb4c33bb769a3330627af63447e8a8e976
+- Register B: https://www.pharosscan.xyz/tx/0x11f9705b2f108bbf90e8eb03c692e56a2fc452d64afe6239e0a660a4f5afeb45
+- Register C: https://www.pharosscan.xyz/tx/0x9411f8b5f4fcf53189591b7365e4ace768a0a05b1dbd319784c51dae60fd1da6
+- **Invoke C (the recursive royalty split):** https://www.pharosscan.xyz/tx/0x5ba20c8771787ff4bc4ea5c938fa32a394f4c1103318b7cfe0039f19dd3b1564
+- Cascade (reused, source-verified): https://www.pharosscan.xyz/address/0x31bE4C6B5711913D818e377ebd809d4397FF3c84
+
+**MAIN-02 status:** ✅ **Complete.** One live mainnet `invoke` of an A→B→C tree paid three distinct creators proportionally in a single transaction, summing exactly to PRICE_C, on the source-verified MAIN-01 Cascade (no redeploy). Skill ids for 05-03 reuse: **A=1, B=2, C=3** (creator C's skill id 3 has price 0.001 PROS).
