@@ -281,11 +281,7 @@ contract CascadeTest is Test {
 
     // --- invariant-style fuzz: conservation across random valid trees ------
 
-    function testFuzz_conservation_holds_for_random_shares(
-        uint256 priceSeed,
-        uint256 shareCB,
-        uint256 shareBA
-    ) public {
+    function testFuzz_conservation_holds_for_random_shares(uint256 priceSeed, uint256 shareCB, uint256 shareBA) public {
         uint256 price = bound(priceSeed, 1, 1_000_000 ether);
         shareCB = bound(shareCB, 0, 10000);
         shareBA = bound(shareBA, 0, 10000);

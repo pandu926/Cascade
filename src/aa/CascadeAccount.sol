@@ -19,8 +19,7 @@ contract CascadeAccount is IAccount {
 
     /// @dev Half the secp256k1 group order. s values above this are the malleable
     ///      (high-s) complement and are rejected (EIP-2).
-    uint256 internal constant SECP256K1_HALF_N =
-        0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
+    uint256 internal constant SECP256K1_HALF_N = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0;
 
     IEntryPoint public immutable entryPoint;
     address public immutable owner;
@@ -49,30 +48,33 @@ contract CascadeAccount is IAccount {
     }
 
     /// @inheritdoc IAccount
-    function validateUserOp(
-        PackedUserOperation calldata userOp,
-        bytes32 userOpHash,
-        uint256 missingAccountFunds
-    ) external override returns (uint256 validationData) {
+    function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
+        external
+        override
+        returns (uint256 validationData)
+    {
         if (msg.sender != address(entryPoint)) revert NotFromEntryPoint();
 
-        bytes32 ethHash =
-            keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", userOpHash));
-        validationData =
-            _recover(ethHash, userOp.signature) == owner ? SIG_VALIDATION_SUCCESS : SIG_VALIDATION_FAILED;
+        bytes32 ethHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", userOpHash));
+        validationData = _recover(ethHash, userOp.signature) == owner ? SIG_VALIDATION_SUCCESS : SIG_VALIDATION_FAILED;
 
         _payPrefund(missingAccountFunds);
     }
 
     /// @notice Route a single call (EntryPoint or owner only).
-    function execute(address dest, uint256 value, bytes calldata func)
-        external
-        onlyEntryPointOrOwner
-    {
+    /// @param dest The target contract or account to call.
+    /// @param value Native value (wei) to forward with the call.
+    /// @param func ABI-encoded calldata for the target.
+    function execute(address dest, uint256 value, bytes calldata func) external onlyEntryPointOrOwner {
         _call(dest, value, func);
     }
 
     /// @notice Route N calls in order — the machinery one UserOp uses to pay many skills.
+    /// @dev Reverts with {LengthMismatch} unless all three arrays are equal length; calls
+    ///      run sequentially and any inner revert bubbles up, reverting the whole batch.
+    /// @param dest The target addresses, one per call, in execution order.
+    /// @param value The native value (wei) to forward with each corresponding call.
+    /// @param func The ABI-encoded calldata for each corresponding call.
     function executeBatch(address[] calldata dest, uint256[] calldata value, bytes[] calldata func)
         external
         onlyEntryPointOrOwner
@@ -83,6 +85,7 @@ contract CascadeAccount is IAccount {
         }
     }
 
+    /// @notice Accept plain native-token transfers (e.g. funding the account for prefund/calls).
     receive() external payable {}
 
     // --- internals ---------------------------------------------------------

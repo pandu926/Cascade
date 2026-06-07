@@ -14,9 +14,7 @@ interface IAccount {
     /// @return validationData 0 on a valid signature, 1 on failure (NEVER revert on a sig
     ///         mismatch — that would break EntryPoint simulation). Upper bytes may pack a
     ///         time range, unused here.
-    function validateUserOp(
-        PackedUserOperation calldata userOp,
-        bytes32 userOpHash,
-        uint256 missingAccountFunds
-    ) external returns (uint256 validationData);
+    function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
+        external
+        returns (uint256 validationData);
 }

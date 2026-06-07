@@ -11,3 +11,9 @@ optimizer_runs = 200
 [rpc_endpoints]
 atlantic_testnet = "https://atlantic.dplabs-internal.com"
 mainnet = "https://rpc.pharos.xyz"
+
+[fmt]
+# The Phase 3 real-EntryPoint fork test is a frozen integration proof; its bytes
+# are intentionally preserved verbatim (HARD-01 non-breaking gate), so exclude it
+# from formatting to keep `forge fmt --check` clean without rewrapping it.
+ignore = ["test/SmartAccount.fork.t.sol"]

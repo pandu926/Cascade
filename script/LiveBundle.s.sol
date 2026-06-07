@@ -90,9 +90,7 @@ contract LiveBundleScript is Script {
             console2.log("  top up address:", TOPUP_ADDR);
             console2.log("  shortfall (wei):", shortfall);
             // STOP CLEANLY — never half-spend.
-            revert(
-                "LIVE BLOCKED: top up 0x67680b09bB422cC510669bd5208D947066D4aeaE - estimated cost exceeds balance"
-            );
+            revert("LIVE BLOCKED: top up 0x67680b09bB422cC510669bd5208D947066D4aeaE - estimated cost exceeds balance");
         }
 
         // --- IT FITS: proceed with the live broadcast -----------------------

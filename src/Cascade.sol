@@ -118,13 +118,7 @@ contract Cascade {
         uint256 depth = maxDepDepth + 1;
         if (depth > MAX_DEPTH) revert DepthExceeded(depth);
 
-        skills[id] = Skill({
-            creator: msg.sender,
-            price: price,
-            depth: depth,
-            depIds: depIds,
-            depShares: depShares
-        });
+        skills[id] = Skill({creator: msg.sender, price: price, depth: depth, depIds: depIds, depShares: depShares});
 
         emit SkillRegistered(id, msg.sender, price);
     }

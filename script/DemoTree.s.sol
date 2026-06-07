@@ -18,8 +18,7 @@ contract DemoTreeScript is Script {
     uint256 internal constant SHARE_B_TO_A = 4000; // 40% of B's slice flows into A's subtree
 
     // Standard Foundry/anvil test mnemonic — its first accounts are pre-funded on anvil.
-    string internal constant DEFAULT_MNEMONIC =
-        "test test test test test test test test test test test junk";
+    string internal constant DEFAULT_MNEMONIC = "test test test test test test test test test test test junk";
 
     function _empty() internal pure returns (uint256[] memory) {
         return new uint256[](0);

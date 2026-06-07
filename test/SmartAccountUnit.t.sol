@@ -26,8 +26,7 @@ contract Probe {
 ///      malleability guard, and CREATE2 factory determinism — no fork, no funds.
 contract SmartAccountUnitTest is Test {
     // secp256k1 group order (for crafting a high-s malleable signature).
-    uint256 internal constant SECP256K1_N =
-        0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
+    uint256 internal constant SECP256K1_N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
 
     address internal entryPoint = makeAddr("entryPoint");
     address internal owner;
