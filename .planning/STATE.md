@@ -4,13 +4,13 @@ milestone: v0.7
 milestone_name: milestone
 status: executing
 stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-06-07T22:50:28.446Z"
-last_activity: 2026-06-07 -- Phase 5 planning complete
+last_updated: "2026-06-07T22:58:12.444Z"
+last_activity: 2026-06-07
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 13
-  completed_plans: 10
+  completed_plans: 11
   percent: 67
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** One `invoke`, and every creator in the composition tree gets paid automatically, proportional to depth — the trustless recursive royalty split must work on-chain.
-**Current focus:** Phase 4 — Contract Hardening & Security Review
+**Current focus:** Phase 5 — Mainnet Deployment & Live Demos
 
 ## Current Position
 
-Phase: 4 (Contract Hardening & Security Review) — EXECUTING
-Plan: 3 of 3
+Phase: 5 (Mainnet Deployment & Live Demos) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-06-07 -- Phase 5 planning complete
+Last activity: 2026-06-07
 
-Progress: [██████████] 100%
+Progress: [█████████░] 85%
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Progress: [██████████] 100%
 | Phase 04 P01 | 11m | 4 tasks | 7 files |
 | Phase 04 P02 | 6 | 3 tasks | 4 files |
 | Phase 04 P03 | 18 | 3 tasks | 3 files |
+| Phase 05 P01 | 9 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,8 @@ Recent decisions affecting current work:
 - [Phase ?]: 03-03: Live step deploys CascadeAccount directly (skip factory) per RESEARCH §8 to shrink footprint; prices from env (Cascade.skills internal), Cascade msg.value==price is the on-chain fail-safe.
 - [Phase ?]: HARD-03: slither 0.11.5 ran clean over Cascade + AA (0 CRITICAL/HIGH); 7 LOW/info findings all Accepted by-design in SECURITY.md
 - [Phase ?]: SECURITY.md flags an independent professional audit as the one remaining step before mainnet custody of real user value
+- [Phase 05]: 05-01: deployed Cascade to mainnet at 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 via forge create --legacy --gas-price (forge script ignores --gas-price)
+- [Phase 05]: 05-01: source verified on pharosscan at RANK 1 (blockscout verifier, no API key) -> Pass-Verified; no fallback needed
 
 ### Pending Todos
 
@@ -113,6 +116,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T22:08:47.693Z
+Last session: 2026-06-07T22:55:26.969Z
 Stopped at: Completed 03-01-PLAN.md
 Resume file: None
