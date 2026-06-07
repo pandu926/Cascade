@@ -57,7 +57,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A single UserOperation batches multiple skill invokes/payments into one op
   3. The UserOp settles through the real Pharos EntryPoint v0.7 (`0x0000000071727De22E5E9d8BAf0edAc6f37da032`), self-bundled via `handleOps()` from an EOA with no external bundler, and the tx is visible on the testnet explorer
   4. The unchanged `Cascade.sol` processes the smart-account-driven royalties identically to the EOA path, confirming account-agnostic behavior
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 03-01-PLAN.md — hand-written v0.7 interfaces + minimal CascadeAccount + CREATE2 AccountFactory, proven by TDD unit suite (AA-01, AA-02 machinery)
+- [ ] 03-02-PLAN.md — fork test: one self-bundled handleOps batches two invokes via the REAL EntryPoint v0.7, +negative AA24 +account-agnostic parity (AA-02, AA-03; primary proof)
+- [ ] 03-03-PLAN.md — GATED optional live step: pre-flight budget gate + direct account deploy + one live handleOps of existing skills, recorded in LIVE_RESULT.md (AA-03 bonus)
 
 ### Phase 4: Visualization, Docs & Submission
 **Goal**: Turn the working system into a compelling, documented, submitted entry.
