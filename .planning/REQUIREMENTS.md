@@ -28,11 +28,26 @@
 - [x] **SKILL-03**: `assets/networks.json` supporting both atlantic-testnet and mainnet
 - [x] **SKILL-04**: Forge scripts for register / invoke / claim
 
-### Demo — Proof
+### Demo — Testnet Proof
 
 - [x] **DEMO-01**: 3 toy skills deployed to testnet forming a dependency tree (A→B→C)
 - [x] **DEMO-02**: End-to-end demo script: one invoke, show 3 separate creator balances rise on-chain
-- [ ] **DEMO-03**: Web visualization — dependency tree + animated money flowing up the tree
+
+### Hardening — Contract Quality (publish-ready)
+
+- [ ] **HARD-01**: All public/external functions and events carry complete NatSpec; `require`-string reverts replaced with named custom errors
+- [ ] **HARD-02**: Test suite expanded with fuzz + invariant coverage across Cascade + AA; `forge fmt` clean; a committed gas snapshot (`.gas-snapshot`)
+- [ ] **HARD-03**: Static analysis (slither, if installable) + a security-reviewer agent pass complete; all CRITICAL/HIGH findings resolved or explicitly documented with rationale
+
+### Mainnet — Live Deployment
+
+- [ ] **MAIN-01**: Cascade deployed to Pharos mainnet (chainId 1672) and source-verified on pharosscan
+- [ ] **MAIN-02**: Live mainnet royalty demo — one invoke of an A→B→C tree pays three creators proportionally, recorded with tx hashes + explorer links
+- [ ] **MAIN-03**: Live mainnet ERC-4337 demo — a smart account batches two invokes in one self-bundled `handleOps` via the real EntryPoint v0.7, recorded with tx hashes + explorer links
+
+### Demo — Visualization, Docs & Submission
+
+- [ ] **DEMO-03**: Web visualization — dependency tree + animated money flowing up the tree, driven by real mainnet on-chain data
 - [ ] **DEMO-04**: README with setup/usage instructions
 - [ ] **DEMO-05**: Demo video
 - [ ] **DEMO-06**: Submitted to DoraHacks (repo link + demo video)
@@ -51,7 +66,7 @@
 | Paymaster / gasless transactions | Stretch only; needs Pharos team access, not core to royalty innovation |
 | Observed/runtime call tracking | Observation needs a trusted reporter (fragile); declared trees are trustless + incentive-compatible |
 | Enforcing undeclared dependencies | Only "cheat" is failing to declare a real dep — a norms/licensing problem, not a contract exploit |
-| Mainnet launch with real funds | Config supports mainnet, but dev + demo happen on testnet |
+| Independent professional security audit | Out of reach for a hackathon timeline; HARD-03 brings the contract to review-ready quality and flags audit as the remaining step before any production value custody |
 
 ## Traceability
 
@@ -73,16 +88,22 @@
 | SKILL-04 | Phase 1 | Complete |
 | DEMO-01 | Phase 1 | Complete |
 | DEMO-02 | Phase 1 | Complete |
-| DEMO-03 | Phase 4 | Pending |
-| DEMO-04 | Phase 4 | Pending |
-| DEMO-05 | Phase 4 | Pending |
-| DEMO-06 | Phase 4 | Pending |
+| HARD-01 | Phase 4 | Pending |
+| HARD-02 | Phase 4 | Pending |
+| HARD-03 | Phase 4 | Pending |
+| MAIN-01 | Phase 5 | Pending |
+| MAIN-02 | Phase 5 | Pending |
+| MAIN-03 | Phase 5 | Pending |
+| DEMO-03 | Phase 6 | Pending |
+| DEMO-04 | Phase 6 | Pending |
+| DEMO-05 | Phase 6 | Pending |
+| DEMO-06 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 20 total
-- Mapped to phases: 20 ✓
+- v1 requirements: 26 total
+- Mapped to phases: 26 ✓
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-06-07*
-*Last updated: 2026-06-07 after roadmap creation (4 phases, 20/20 mapped)*
+*Last updated: 2026-06-07 — restructured to 6 phases (added Hardening + Mainnet) per publish-ready mandate*
