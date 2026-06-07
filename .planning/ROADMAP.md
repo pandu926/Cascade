@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Recursive Royalty Core** - Contract + forge scripts + toy tree so one invoke pays three creators on testnet (completed 2026-06-07)
 - [x] **Phase 2: Skill Packaging** - SKILL.md, references, and networks.json make it a loadable, reusable Skill (completed 2026-06-07)
-- [ ] **Phase 3: Smart-Account Agents (ERC-4337)** - Agents batch skill payments into one self-bundled UserOp via the real EntryPoint
+- [x] **Phase 3: Smart-Account Agents (ERC-4337)** - Agents batch skill payments into one self-bundled UserOp via the real EntryPoint (completed 2026-06-07)
 - [ ] **Phase 4: Visualization, Docs & Submission** - Animated money-flow demo, README, video, DoraHacks submission
 
 ## Phase Details
@@ -60,7 +60,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 - [x] 03-01-PLAN.md — hand-written v0.7 interfaces + minimal CascadeAccount + CREATE2 AccountFactory, proven by TDD unit suite (AA-01, AA-02 machinery)
 - [x] 03-02-PLAN.md — fork test: one self-bundled handleOps batches two invokes via the REAL EntryPoint v0.7, +negative AA24 +account-agnostic parity (AA-02, AA-03; primary proof)
-- [ ] 03-03-PLAN.md — GATED optional live step: pre-flight budget gate + direct account deploy + one live handleOps of existing skills, recorded in LIVE_RESULT.md (AA-03 bonus)
+- [x] 03-03-PLAN.md — GATED optional live step: pre-flight budget gate + direct account deploy + one live handleOps of existing skills, recorded in LIVE_RESULT.md (AA-03 bonus)
 
 ### Phase 4: Visualization, Docs & Submission
 **Goal**: Turn the working system into a compelling, documented, submitted entry.
@@ -84,5 +84,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Recursive Royalty Core | 3/3 | Complete   | 2026-06-07 |
 | 2. Skill Packaging | 1/1 | Complete   | 2026-06-07 |
-| 3. Smart-Account Agents (ERC-4337) | 2/3 | In Progress|  |
+| 3. Smart-Account Agents (ERC-4337) | 3/3 | Complete   | 2026-06-07 |
 | 4. Visualization, Docs & Submission | 0/TBD | Not started | - |

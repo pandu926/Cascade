@@ -4,14 +4,14 @@ milestone: v0.7
 milestone_name: milestone
 status: verifying
 stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-06-07T20:29:07.108Z"
+last_updated: "2026-06-07T20:42:14.144Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 7
-  completed_plans: 6
-  percent: 50
+  completed_plans: 7
+  percent: 75
 ---
 
 # Project State
@@ -30,7 +30,7 @@ Plan: 3 of 3
 Status: Phase complete — ready for verification
 Last activity: 2026-06-07
 
-Progress: [█████████░] 86%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Progress: [█████████░] 86%
 | Phase 02 P01 | 9 | 2 tasks | 4 files |
 | Phase 03 P01 | 6 | 3 tasks | 6 files |
 | Phase 03 P02 | 4 | 2 tasks | 1 files |
+| Phase 03 P03 | 9 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -85,6 +86,8 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 3 Plan 01: proxy-free CREATE2 account (no UUPS/ERC1967) — gas-lean per CONTEXT mandate
 - [Phase ?]: 03-02: Registered own skills on the live Cascade (price is internal/no getter) to control exact msg.value while keeping the real EntryPoint + Cascade bytecode
 - [Phase ?]: 03-02: Negative test matches FailedOp(0,'AA24 signature error') explicitly so a different revert fails loudly
+- [Phase ?]: 03-03: Live 4337 step gated by a STOP-clean pre-flight budget gate — at the node's real 10 gwei it blocks (est 0.0188 vs 0.0043 PHRS); no half-spend. AA-01/02/03 already met by the Wave 2 fork proof.
+- [Phase ?]: 03-03: Live step deploys CascadeAccount directly (skip factory) per RESEARCH §8 to shrink footprint; prices from env (Cascade.skills internal), Cascade msg.value==price is the on-chain fail-safe.
 
 ### Pending Todos
 
@@ -105,6 +108,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T20:28:42.504Z
+Last session: 2026-06-07T20:41:48.128Z
 Stopped at: Completed 03-01-PLAN.md
 Resume file: None
