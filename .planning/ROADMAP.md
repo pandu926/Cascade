@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Skill Packaging** - SKILL.md, references, and networks.json make it a loadable, reusable Skill (completed 2026-06-07)
 - [x] **Phase 3: Smart-Account Agents (ERC-4337)** - Agents batch skill payments into one self-bundled UserOp via the real EntryPoint (completed 2026-06-07)
 - [x] **Phase 4: Contract Hardening & Security Review** - NatSpec, custom errors, fuzz/invariant tests, static analysis + security-reviewer pass — publish-ready quality (completed 2026-06-07)
-- [ ] **Phase 5: Mainnet Deployment & Live Demos** - Deploy + verify on Pharos mainnet; live royalty + 4337 demos recorded with explorer links
+- [x] **Phase 5: Mainnet Deployment & Live Demos** - Deploy + verify on Pharos mainnet; live royalty + 4337 demos recorded with explorer links (completed 2026-06-07)
 - [ ] **Phase 6: Visualization, Docs & Submission** - Animated money-flow demo (real mainnet data), README, video, DoraHacks submission
 
 ## Phase Details
@@ -92,7 +92,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 - [x] 05-01-PLAN.md — pre-flight gated mainnet deploy of Cascade + ranked source-verify on pharosscan, recorded in MAINNET_RESULT.md (MAIN-01)
 - [x] 05-02-PLAN.md — live A→B→C royalty demo: fund 3 creators, one invoke pays three proportionally (Σ==PRICE_C), recorded (MAIN-02)
-- [ ] 05-03-PLAN.md — live 4337 demo: factory+account deploy, one self-bundled handleOps batches two invokes via real EntryPoint v0.7 + final human-verify (MAIN-03)
+- [x] 05-03-PLAN.md — live 4337 demo: factory+account deploy, one self-bundled handleOps batches two invokes via real EntryPoint v0.7 + final human-verify (MAIN-03)
 
 ### Phase 6: Visualization, Docs & Submission
 **Goal**: Turn the working, mainnet-deployed system into a compelling, documented, submitted entry.
@@ -118,5 +118,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Skill Packaging | 1/1 | Complete   | 2026-06-07 |
 | 3. Smart-Account Agents (ERC-4337) | 3/3 | Complete   | 2026-06-07 |
 | 4. Contract Hardening & Security Review | 3/3 | Complete   | 2026-06-07 |
-| 5. Mainnet Deployment & Live Demos | 2/3 | In Progress|  |
+| 5. Mainnet Deployment & Live Demos | 3/3 | Complete   | 2026-06-07 |
 | 6. Visualization, Docs & Submission | 0/TBD | Not started | - |

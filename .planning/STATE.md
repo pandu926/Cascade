@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.7
 milestone_name: milestone
-status: executing
+status: verifying
 stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-06-07T23:12:12.795Z"
+last_updated: "2026-06-07T23:38:34.641Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 13
-  completed_plans: 12
-  percent: 67
+  completed_plans: 13
+  percent: 83
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 Phase: 5 (Mainnet Deployment & Live Demos) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-07
 
-Progress: [█████████░] 92%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -64,6 +64,7 @@ Progress: [█████████░] 92%
 | Phase 04 P03 | 18 | 3 tasks | 3 files |
 | Phase 05 P01 | 9 | 2 tasks | 1 files |
 | Phase 05 P02 | 11 | 2 tasks | 1 files |
+| Phase 05 P03 | 16 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,9 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-01: source verified on pharosscan at RANK 1 (blockscout verifier, no API key) -> Pass-Verified; no fallback needed
 - [Phase ?]: 05-02: live mainnet A->B->C invoke paid 3 creators 0.0002/0.0003/0.0005 PROS in one tx, Sigma==PRICE_C exactly; skillCount 0->3 proved reuse (no redeploy)
 - [Phase ?]: 05-02: used discrete cast send (not forge script DemoTree) + fresh keypairs (not anvil mnemonic) for the live run; pre-broadcast guard (chainId + cast code non-empty) neutralized DemoTree silent fresh-deploy fallback
+- [Phase ?]: 05-03: live mainnet smart account batched 2 Cascade.invoke calls in ONE self-bundled handleOps via real EntryPoint v0.7 (tx 0x1f3cec93..); both creators rose, Sigma==PRICE_C; account-agnostic parity with EOA path proven with real money
+- [Phase ?]: 05-03: new mainnet-guarded LiveBundleMainnet.s.sol (chainId 1672) rather than weakening the frozen testnet LiveBundle.s.sol (688689 guard)
+- [Phase ?]: 05-03: first handleOps hit AA95 out-of-gas (forge undersized bundler tx vs EntryPoint 680k forwarded-gas floor); rolled back fully no half-spend, fixed via --gas-estimate-multiplier 500
 
 ### Pending Todos
 
@@ -119,6 +123,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T23:11:48.063Z
+Last session: 2026-06-07T23:38:02.207Z
 Stopped at: Completed 03-01-PLAN.md
 Resume file: None

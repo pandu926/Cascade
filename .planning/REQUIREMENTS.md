@@ -43,7 +43,7 @@
 
 - [x] **MAIN-01**: Cascade deployed to Pharos mainnet (chainId 1672) and source-verified on pharosscan
 - [x] **MAIN-02**: Live mainnet royalty demo — one invoke of an A→B→C tree pays three creators proportionally, recorded with tx hashes + explorer links
-- [ ] **MAIN-03**: Live mainnet ERC-4337 demo — a smart account batches two invokes in one self-bundled `handleOps` via the real EntryPoint v0.7, recorded with tx hashes + explorer links
+- [x] **MAIN-03**: Live mainnet ERC-4337 demo — a smart account batches two invokes in one self-bundled `handleOps` via the real EntryPoint v0.7, recorded with tx hashes + explorer links
 
 ### Demo — Visualization, Docs & Submission
 
@@ -93,7 +93,7 @@
 | HARD-03 | Phase 4 | Complete |
 | MAIN-01 | Phase 5 | Complete |
 | MAIN-02 | Phase 5 | Complete |
-| MAIN-03 | Phase 5 | Pending |
+| MAIN-03 | Phase 5 | Complete |
 | DEMO-03 | Phase 6 | Pending |
 | DEMO-04 | Phase 6 | Pending |
 | DEMO-05 | Phase 6 | Pending |
