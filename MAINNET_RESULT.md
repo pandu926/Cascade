@@ -207,3 +207,55 @@ Three `RoyaltyAccrued(uint256 indexed skillId, address indexed creator, uint256 
 - Cascade (reused, source-verified): https://www.pharosscan.xyz/address/0x31bE4C6B5711913D818e377ebd809d4397FF3c84
 
 **MAIN-02 status:** ✅ **Complete.** One live mainnet `invoke` of an A→B→C tree paid three distinct creators proportionally in a single transaction, summing exactly to PRICE_C, on the source-verified MAIN-01 Cascade (no redeploy). Skill ids for 05-03 reuse: **A=1, B=2, C=3** (creator C's skill id 3 has price 0.001 PROS).
+
+---
+
+## MAIN-03 4337 Demo (live self-bundled handleOps batching two invokes)
+
+**Status:** ✅ **Complete.** A live Pharos-mainnet smart account (`CascadeAccount`, deployed via an `AccountFactory`) batched TWO `Cascade.invoke` calls into ONE self-bundled `handleOps` through the real EntryPoint v0.7 — both invoked skills' creators (B id2, C id3) rose, plus A via C's fan-out, summing exactly to PRICE_C. The smart account is the `msg.sender`/`payer` of both invokes, proving the account-agnostic claim with real money (parity with the MAIN-02 EOA path).
+
+The flow reproduces the Phase 3 fork-proven ERC-4337 v0.7 mechanics LIVE: deploy factory → `createAccount` (CREATE2, owner = broadcaster EOA) → fund the account minimally → build + sign ONE `PackedUserOperation` (`callData = executeBatch([cascade,cascade],[0, 1e15],[invoke(2), invoke(3)])`) → EOA self-bundles via `ep.handleOps([op], beneficiary)`. No external bundler.
+
+### Driver
+
+`script/LiveBundleMainnet.s.sol` — a NEW, mainnet-guarded sibling of the FROZEN testnet `script/LiveBundle.s.sol` (the testnet guard `require(block.chainid == 688689)` is left untouched). Hard guard: `require(block.chainid == 1672, "wrong chainId: refusing to broadcast")`. Reads `CASCADE`, `SKILL_ID_1/2`, `PRICE_1/2`, `FACTORY`, `SALT`, `GAS_PRICE_WEI` from env (no hardcoded mainnet Cascade). Reuses LiveBundle's exact `_buildSignedOp` / `_batchInvoke` / `_pack` v0.7 mechanics verbatim. `PRIVATE_KEY` read from env only, never echoed.
+
+### Pre-flight gate (ran FIRST, before any broadcast)
+
+| Check | Result |
+|-------|--------|
+| `cast chain-id --rpc-url mainnet` | `1672` ✅ |
+| `cast code <CASCADE>` non-empty | ✅ `4231` hex chars |
+| `cast code <EntryPoint v0.7>` non-empty | ✅ `~16 KB` (32073 hex chars) |
+| Deployer balance before MAIN-03 | `1.931603440000000000` PROS |
+| Estimated TOTAL (factory+account+handleOps gas + prefund + 2 invoke values @ 10 gwei) | `0.0258` PROS ≤ balance ✅ |
+| Full dry-run (`forge script` against mainnet fork, no broadcast) | `SIMULATION COMPLETE` — entire flow incl. handleOps settled clean against the real EntryPoint bytecode |
+
+### Deployed 4337 contracts (live on mainnet)
+
+| Artifact | Address |
+|----------|---------|
+| EntryPoint v0.7 (canonical, reused) | `0x0000000071727De22E5E9d8BAf0edAc6f37da032` |
+| **AccountFactory** | **`0x904935BA1417FC35591019A0fC54c670DA824c60`** |
+| **CascadeAccount (smart account)** | **`0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1`** |
+| Account owner / signer / broadcaster EOA | `0x3306E846b5Dc7F890436955999CeE27a6abbCbe8` |
+
+**CREATE2 determinism check:** `cast call <factory> "getAddress(address,uint256)(address)" 0x3306… 0` == `0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1` (matches the deployed account) ✅. `cast code` non-empty on both: factory `6515` hex chars, account `4577` hex chars.
+
+### Deploy + funding txs (all status 1)
+
+| Step | tx hash | block | gasUsed | notes |
+|------|---------|-------|---------|-------|
+| Factory deploy | `0x0adbda11005db958e3f8a86681aab2188303efa8ba46d31094d9d19a4d2b5055` | `9631013` | `755099` | `contractAddress` == factory `0x9049…` |
+| createAccount (CREATE2 account deploy) | `0x316dfbf86135e7ed5838125be06be6301bafb61819d74f43cc32c8bfbb5515f2` | `9631013` | `524320` | to factory; deploys account `0xfe93…` |
+| Fund account (prefund + 2 invoke values) | `0x0966005d410f247ac0d1da967aa31985ec78784d88275080d890ca78d3ef3320` | `9631013` | `21055` | value `0.0078` PROS to account |
+
+After funding, the account held `7800000000000000` wei (`0.0078` PROS) = EntryPoint prefund (`6.8e15`) + invoke value for C (`1e15`) + invoke value for B (`0`).
+
+### Deploy explorer links
+
+- Factory: https://www.pharosscan.xyz/address/0x904935BA1417FC35591019A0fC54c670DA824c60
+- Smart account: https://www.pharosscan.xyz/address/0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1
+- Factory deploy tx: https://www.pharosscan.xyz/tx/0x0adbda11005db958e3f8a86681aab2188303efa8ba46d31094d9d19a4d2b5055
+- createAccount tx: https://www.pharosscan.xyz/tx/0x316dfbf86135e7ed5838125be06be6301bafb61819d74f43cc32c8bfbb5515f2
+- Funding tx: https://www.pharosscan.xyz/tx/0x0966005d410f247ac0d1da967aa31985ec78784d88275080d890ca78d3ef3320
