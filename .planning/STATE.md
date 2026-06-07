@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v0.7
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-06-07T20:10:24.734Z"
-last_activity: 2026-06-07 -- Phase 3 planning complete
+status: verifying
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-06-07T20:19:26.466Z"
+last_activity: 2026-06-07
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 7
-  completed_plans: 4
+  completed_plans: 5
   percent: 50
 ---
 
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 Phase: 01 (Recursive Royalty Core) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
-Last activity: 2026-06-07 -- Phase 3 planning complete
+Status: Phase complete — ready for verification
+Last activity: 2026-06-07
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 01 P02 | 12 | 2 tasks | 7 files |
 | Phase 01 P03 | 18 | 3 tasks | 1 files |
 | Phase 02 P01 | 9 | 2 tasks | 4 files |
+| Phase 03 P01 | 6 | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,10 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 1 Plan 03: used 3 fresh funded creator wallets (CREATOR_*_KEY override) instead of shared anvil-default keys for a deterministic on-chain demo
 - [Phase 02]: Phase 2 Plan 01: mirrored official pharos-skill-engine layout (top-level SKILL.md + references/ + reused assets/networks.json) for native-skill parity
 - [Phase 02]: Phase 2 Plan 01: documented both forge-script (env-var) and raw cast send/call forms per action so agents can copy-paste either path
+- [Phase ?]: Phase 3 Plan 01: hand-wrote v0.7 interfaces (no forge install) — keeps lib/ at forge-std only, zero supply-chain surface
+- [Phase ?]: Phase 3 Plan 01: inline ecrecover with EIP-2 malleability guard instead of OZ ECDSA (OZ not in lib/, ~15 guarded lines suffice)
+- [Phase ?]: Phase 3 Plan 01: validateUserOp returns 0/1 and never reverts on sig mismatch (reverting breaks EntryPoint simulation)
+- [Phase ?]: Phase 3 Plan 01: proxy-free CREATE2 account (no UUPS/ERC1967) — gas-lean per CONTEXT mandate
 
 ### Pending Todos
 
@@ -97,6 +102,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T19:42:49.834Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-06-07T20:19:26.426Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None

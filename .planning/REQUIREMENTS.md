@@ -17,8 +17,8 @@
 
 ### AA — ERC-4337 Integration
 
-- [ ] **AA-01**: An agent can be a deployed smart account (via a simple factory)
-- [ ] **AA-02**: Invoke can be expressed as a UserOperation that batches multiple skill payments into one op
+- [x] **AA-01**: An agent can be a deployed smart account (via a simple factory)
+- [x] **AA-02**: Invoke can be expressed as a UserOperation that batches multiple skill payments into one op
 - [ ] **AA-03**: UserOps settle through the real Pharos EntryPoint (v0.7), self-bundled via `handleOps()` from an EOA (no external bundler)
 
 ### Skill — Packaging
@@ -64,8 +64,8 @@
 | CORE-05 | Phase 1 | Complete |
 | CORE-06 | Phase 1 | Complete |
 | CORE-07 | Phase 1 | Complete |
-| AA-01 | Phase 3 | Pending |
-| AA-02 | Phase 3 | Pending |
+| AA-01 | Phase 3 | Complete |
+| AA-02 | Phase 3 | Complete |
 | AA-03 | Phase 3 | Pending |
 | SKILL-01 | Phase 2 | Complete |
 | SKILL-02 | Phase 2 | Complete |
