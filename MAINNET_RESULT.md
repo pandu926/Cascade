@@ -90,3 +90,40 @@ forge verify-contract 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 src/Cascade.sol
 Verification spent no PROS (submit-only, public source) and did not alter the deployed contract.
 
 > **Residual check for submission (Phase 6):** Before submitting, a human should open the pharosscan contract UI Code tab and confirm the green "Verified" checkmark visually — the read command-API cannot confirm it programmatically. **VISUAL CHECK PENDING.**
+
+---
+
+## MAIN-02 Royalty Demo (live A→B→C recursive split)
+
+**Status:** ✅ In progress — three creators funded; A→B→C register + single invoke recorded below.
+
+The recursive-royalty killer demo, **live on Pharos mainnet** against the SAME Cascade from MAIN-01 (`0x31bE4C6B5711913D818e377ebd809d4397FF3c84`) — **no redeploy**. Three distinct creator EOAs register an A→B→C dependency tree, then one payer `invoke` of C fans real PROS up the tree so all three creator balances rise proportionally in a single transaction.
+
+### Pre-flight gate (Task 1, before any funding broadcast)
+
+| Check | Result |
+|-------|--------|
+| `cast chain-id --rpc-url mainnet` | `1672` ✅ |
+| Deployer balance before funding | `1.994506190000000000` PROS (ample) |
+| Estimated cost (3×0.02 stipend + 3 register + 1 invoke + 0.001 PRICE_C @ 10 gwei) | well under 0.1 PROS ✅ |
+
+### Three creator EOAs
+
+Keys derived as **three fresh `cast wallet new` keypairs**, stored only in a gitignored, `chmod 600` file outside the repo (`~/.demo-creators.env`). No private key or seed is written here. Fresh keys (not the public anvil test mnemonic) avoid the auto-sweep risk that well-known derived addresses face on a live chain.
+
+| Creator | Address | Funding tx | Receipt | Balance after funding |
+|---------|---------|------------|---------|----------------------|
+| A (leaf) | `0x7ca05d52EB17833E802B7D2eC7f1Fc23950c56b8` | `0x4239efcf5e0b5d90b25538d04e165460fc6408d92b76a0e41097285cbc161be7` | status `1` | `0.02` PROS |
+| B (dep A, 40%) | `0xD79F121Ac383e3e7f2aeEa6AEb3b700e2Fb6796b` | `0x0bb63d3efbe445b2141d6fbbc4bbf58a526e556a87cb80972cebb7c8e2ed6519` | status `1` | `0.02` PROS |
+| C (dep B, 50%, price 0.001) | `0xECe4BBabd00c22E1baA1dE7f83E152D0eB6D12ef` | `0x62a85fa86100683649391fa08f2a781e2b2e9b58dc4db9cd2d61011ed2d99384` | status `1` | `0.02` PROS |
+
+Each funded `0.02` PROS from the deployer via `cast send <creator> --value 0.02ether --rpc-url mainnet --legacy --gas-price 10000000000`. Deployer balance after the three stipends: `1.933876190000000000` PROS.
+
+### Funding explorer links
+
+- Fund A: https://www.pharosscan.xyz/tx/0x4239efcf5e0b5d90b25538d04e165460fc6408d92b76a0e41097285cbc161be7
+- Fund B: https://www.pharosscan.xyz/tx/0x0bb63d3efbe445b2141d6fbbc4bbf58a526e556a87cb80972cebb7c8e2ed6519
+- Fund C: https://www.pharosscan.xyz/tx/0x62a85fa86100683649391fa08f2a781e2b2e9b58dc4db9cd2d61011ed2d99384
+- Creator A address: https://www.pharosscan.xyz/address/0x7ca05d52EB17833E802B7D2eC7f1Fc23950c56b8
+- Creator B address: https://www.pharosscan.xyz/address/0xD79F121Ac383e3e7f2aeEa6AEb3b700e2Fb6796b
+- Creator C address: https://www.pharosscan.xyz/address/0xECe4BBabd00c22E1baA1dE7f83E152D0eB6D12ef
