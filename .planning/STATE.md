@@ -4,13 +4,13 @@ milestone: v0.7
 milestone_name: milestone
 status: executing
 stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-06-07T22:58:12.444Z"
+last_updated: "2026-06-07T23:12:12.795Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
   percent: 67
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 5 (Mainnet Deployment & Live Demos) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-06-07
 
-Progress: [█████████░] 85%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ Progress: [█████████░] 85%
 | Phase 04 P02 | 6 | 3 tasks | 4 files |
 | Phase 04 P03 | 18 | 3 tasks | 3 files |
 | Phase 05 P01 | 9 | 2 tasks | 1 files |
+| Phase 05 P02 | 11 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,8 @@ Recent decisions affecting current work:
 - [Phase ?]: SECURITY.md flags an independent professional audit as the one remaining step before mainnet custody of real user value
 - [Phase 05]: 05-01: deployed Cascade to mainnet at 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 via forge create --legacy --gas-price (forge script ignores --gas-price)
 - [Phase 05]: 05-01: source verified on pharosscan at RANK 1 (blockscout verifier, no API key) -> Pass-Verified; no fallback needed
+- [Phase ?]: 05-02: live mainnet A->B->C invoke paid 3 creators 0.0002/0.0003/0.0005 PROS in one tx, Sigma==PRICE_C exactly; skillCount 0->3 proved reuse (no redeploy)
+- [Phase ?]: 05-02: used discrete cast send (not forge script DemoTree) + fresh keypairs (not anvil mnemonic) for the live run; pre-broadcast guard (chainId + cast code non-empty) neutralized DemoTree silent fresh-deploy fallback
 
 ### Pending Todos
 
@@ -116,6 +119,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T22:55:26.969Z
+Last session: 2026-06-07T23:11:48.063Z
 Stopped at: Completed 03-01-PLAN.md
 Resume file: None

@@ -91,7 +91,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Every spend is gated by a pre-flight balance/gas check and confirmed before broadcast; all results captured in a MAINNET_RESULT.md
 **Plans**: 3 plans
 - [x] 05-01-PLAN.md — pre-flight gated mainnet deploy of Cascade + ranked source-verify on pharosscan, recorded in MAINNET_RESULT.md (MAIN-01)
-- [ ] 05-02-PLAN.md — live A→B→C royalty demo: fund 3 creators, one invoke pays three proportionally (Σ==PRICE_C), recorded (MAIN-02)
+- [x] 05-02-PLAN.md — live A→B→C royalty demo: fund 3 creators, one invoke pays three proportionally (Σ==PRICE_C), recorded (MAIN-02)
 - [ ] 05-03-PLAN.md — live 4337 demo: factory+account deploy, one self-bundled handleOps batches two invokes via real EntryPoint v0.7 + final human-verify (MAIN-03)
 
 ### Phase 6: Visualization, Docs & Submission
@@ -118,5 +118,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Skill Packaging | 1/1 | Complete   | 2026-06-07 |
 | 3. Smart-Account Agents (ERC-4337) | 3/3 | Complete   | 2026-06-07 |
 | 4. Contract Hardening & Security Review | 3/3 | Complete   | 2026-06-07 |
-| 5. Mainnet Deployment & Live Demos | 1/3 | In Progress|  |
+| 5. Mainnet Deployment & Live Demos | 2/3 | In Progress|  |
 | 6. Visualization, Docs & Submission | 0/TBD | Not started | - |
