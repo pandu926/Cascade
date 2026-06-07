@@ -23,9 +23,9 @@
 
 ### Skill — Packaging
 
-- [ ] **SKILL-01**: `SKILL.md` with YAML frontmatter exposing register / invoke / claim as natural-language agent actions
-- [ ] **SKILL-02**: `references/` files with command templates + error handling per action (mirrors official engine layout)
-- [ ] **SKILL-03**: `assets/networks.json` supporting both atlantic-testnet and mainnet
+- [x] **SKILL-01**: `SKILL.md` with YAML frontmatter exposing register / invoke / claim as natural-language agent actions
+- [x] **SKILL-02**: `references/` files with command templates + error handling per action (mirrors official engine layout)
+- [x] **SKILL-03**: `assets/networks.json` supporting both atlantic-testnet and mainnet
 - [x] **SKILL-04**: Forge scripts for register / invoke / claim
 
 ### Demo — Proof
@@ -67,9 +67,9 @@
 | AA-01 | Phase 3 | Pending |
 | AA-02 | Phase 3 | Pending |
 | AA-03 | Phase 3 | Pending |
-| SKILL-01 | Phase 2 | Pending |
-| SKILL-02 | Phase 2 | Pending |
-| SKILL-03 | Phase 2 | Pending |
+| SKILL-01 | Phase 2 | Complete |
+| SKILL-02 | Phase 2 | Complete |
+| SKILL-03 | Phase 2 | Complete |
 | SKILL-04 | Phase 1 | Complete |
 | DEMO-01 | Phase 1 | Complete |
 | DEMO-02 | Phase 1 | Complete |
