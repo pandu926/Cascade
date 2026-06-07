@@ -97,4 +97,214 @@ contract CascadeTest is Test {
         // Contract fully drained — no wei stranded.
         assertEq(address(cascade).balance, 0, "contract drained");
     }
+
+    // --- register revert paths --------------------------------------------
+
+    function test_register_reverts_when_dep_not_yet_registered() public {
+        // depId == newId (2) is not yet registered (only id 1 exists after this).
+        vm.prank(creatorA);
+        cascade.register(0, _empty(), _empty()); // id 1
+        vm.prank(creatorB);
+        vm.expectRevert(bytes("bad dep id"));
+        cascade.register(0, _one(2), _one(1000)); // references id 2 which doesn't exist yet
+    }
+
+    function test_register_reverts_on_cycle_via_forward_reference() public {
+        // A skill cannot reference an id >= its own (forward reference => cycle).
+        // The very first skill (id 1) referencing id 1 is a self-cycle.
+        vm.prank(creatorA);
+        vm.expectRevert(bytes("bad dep id"));
+        cascade.register(0, _one(1), _one(1000));
+    }
+
+    function test_register_reverts_when_shares_exceed_10000_bps() public {
+        vm.prank(creatorA);
+        uint256 idA = cascade.register(0, _empty(), _empty());
+        vm.prank(creatorB);
+        uint256 idB = cascade.register(0, _empty(), _empty());
+
+        uint256[] memory ids = new uint256[](2);
+        ids[0] = idA;
+        ids[1] = idB;
+        uint256[] memory shares = new uint256[](2);
+        shares[0] = 6000;
+        shares[1] = 4001; // 10001 total > 10000
+
+        vm.prank(creatorC);
+        vm.expectRevert(bytes("shares > 10000"));
+        cascade.register(1 ether, ids, shares);
+    }
+
+    function test_register_reverts_when_dep_id_is_zero() public {
+        vm.prank(creatorA);
+        vm.expectRevert(bytes("bad dep id"));
+        cascade.register(0, _one(0), _one(1000));
+    }
+
+    function test_register_reverts_on_length_mismatch() public {
+        vm.prank(creatorA);
+        uint256 idA = cascade.register(0, _empty(), _empty());
+        vm.prank(creatorB);
+        vm.expectRevert(bytes("len mismatch"));
+        cascade.register(0, _one(idA), _empty());
+    }
+
+    function test_register_reverts_when_depth_exceeds_8() public {
+        // Build a linear chain: id 1 (depth 1) ... id 8 (depth 8) all OK,
+        // then id 9 would be depth 9 > MAX_DEPTH(8) and must revert.
+        uint256 prev;
+        for (uint256 level = 1; level <= 8; ++level) {
+            vm.prank(creatorA);
+            if (level == 1) {
+                prev = cascade.register(0, _empty(), _empty());
+            } else {
+                prev = cascade.register(0, _one(prev), _one(1000));
+            }
+        }
+        // 9th registration trips the cap.
+        vm.prank(creatorA);
+        vm.expectRevert(bytes("depth > 8"));
+        cascade.register(0, _one(prev), _one(1000));
+    }
+
+    // --- invoke revert paths ----------------------------------------------
+
+    function test_invoke_reverts_on_wrong_msg_value() public {
+        (,, uint256 idC) = _registerTree();
+
+        // Underpayment.
+        vm.deal(payer, PRICE);
+        vm.prank(payer);
+        vm.expectRevert(bytes("wrong value"));
+        cascade.invoke{value: PRICE - 1}(idC);
+
+        // Overpayment.
+        vm.deal(payer, PRICE + 1);
+        vm.prank(payer);
+        vm.expectRevert(bytes("wrong value"));
+        cascade.invoke{value: PRICE + 1}(idC);
+    }
+
+    function test_invoke_reverts_on_unknown_skill() public {
+        vm.prank(payer);
+        vm.expectRevert(bytes("no skill"));
+        cascade.invoke{value: 0}(0);
+    }
+
+    // --- claim semantics ---------------------------------------------------
+
+    function test_double_claim_does_not_double_pay() public {
+        (uint256 idA,,) = _registerTree();
+        idA; // silence unused
+
+        vm.deal(payer, PRICE);
+        // invoke the top skill (id 3) so balances accrue.
+        vm.prank(payer);
+        cascade.invoke{value: PRICE}(3);
+
+        uint256 accrued = cascade.balances(creatorA);
+        assertGt(accrued, 0, "A should have accrued");
+
+        // First claim pays out the accrued amount.
+        uint256 before = creatorA.balance;
+        vm.prank(creatorA);
+        uint256 paid = cascade.claim();
+        assertEq(paid, accrued, "first claim pays accrued");
+        assertEq(creatorA.balance, before + accrued, "wallet credited once");
+
+        // Second claim transfers nothing (balance was zeroed).
+        vm.prank(creatorA);
+        uint256 paidAgain = cascade.claim();
+        assertEq(paidAgain, 0, "second claim pays zero");
+        assertEq(creatorA.balance, before + accrued, "no double pay");
+    }
+
+    // --- per-level remainder conservation (dust) --------------------------
+
+    function test_remainder_conserves_exactly() public {
+        // Shares chosen so integer division leaves a remainder at every level.
+        // price = 100 wei; C->B 3333 bps => 100*3333/10000 = 33 (floor), C keeps 67.
+        // B->A 3333 bps => 33*3333/10000 = 10 (floor), B keeps 23, A gets 10.
+        uint256 price = 100;
+        uint256 shareCB = 3333;
+        uint256 shareBA = 3333;
+
+        vm.prank(creatorA);
+        uint256 idA = cascade.register(0, _empty(), _empty());
+        vm.prank(creatorB);
+        uint256 idB = cascade.register(0, _one(idA), _one(shareBA));
+        vm.prank(creatorC);
+        uint256 idC = cascade.register(price, _one(idB), _one(shareCB));
+
+        uint256 toB = (price * shareCB) / 10000; // 33
+        uint256 cCut = price - toB; // 67
+        uint256 toA = (toB * shareBA) / 10000; // 10
+        uint256 bCut = toB - toA; // 23
+        uint256 aCut = toA; // 10
+
+        vm.deal(payer, price);
+        vm.prank(payer);
+        cascade.invoke{value: price}(idC);
+
+        assertEq(cascade.balances(creatorC), cCut, "C absorbs its remainder");
+        assertEq(cascade.balances(creatorB), bCut, "B absorbs its remainder");
+        assertEq(cascade.balances(creatorA), aCut, "A leaf cut");
+
+        // Exact conservation despite floor() at every intermediate node.
+        assertEq(
+            cascade.balances(creatorA) + cascade.balances(creatorB) + cascade.balances(creatorC),
+            price,
+            "sum accrued == price exactly"
+        );
+    }
+
+    // --- account-agnosticism ----------------------------------------------
+
+    function test_account_agnostic_eoa_path() public {
+        (,, uint256 idC) = _registerTree();
+
+        // A plain EOA (no contract code) invokes via vm.prank — identical path.
+        address eoa = makeAddr("plainEOA");
+        assertEq(eoa.code.length, 0, "caller is a codeless EOA");
+
+        vm.deal(eoa, PRICE);
+        vm.prank(eoa);
+        cascade.invoke{value: PRICE}(idC);
+
+        // Same accrual result as any other caller.
+        assertEq(
+            cascade.balances(creatorA) + cascade.balances(creatorB) + cascade.balances(creatorC),
+            PRICE,
+            "EOA path conserves identically"
+        );
+    }
+
+    // --- invariant-style fuzz: conservation across random valid trees ------
+
+    function testFuzz_conservation_holds_for_random_shares(
+        uint256 priceSeed,
+        uint256 shareCB,
+        uint256 shareBA
+    ) public {
+        uint256 price = bound(priceSeed, 1, 1_000_000 ether);
+        shareCB = bound(shareCB, 0, 10000);
+        shareBA = bound(shareBA, 0, 10000);
+
+        vm.prank(creatorA);
+        uint256 idA = cascade.register(0, _empty(), _empty());
+        vm.prank(creatorB);
+        uint256 idB = cascade.register(0, _one(idA), _one(shareBA));
+        vm.prank(creatorC);
+        uint256 idC = cascade.register(price, _one(idB), _one(shareCB));
+
+        vm.deal(payer, price);
+        vm.prank(payer);
+        cascade.invoke{value: price}(idC);
+
+        assertEq(
+            cascade.balances(creatorA) + cascade.balances(creatorB) + cascade.balances(creatorC),
+            price,
+            "conservation: sum accrued == price for any valid tree"
+        );
+    }
 }
