@@ -30,7 +30,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Each creator can independently claim their accrued royalty to their own wallet (pull-payment), and claiming twice does not double-pay
   4. Invoke gas stays bounded — a tree deeper than the depth cap reverts rather than running unbounded
   5. The same `Cascade.sol`, unchanged, accepts an invoke from a plain EOA (account-agnostic by construction)
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 01-01-PLAN.md — Cascade.sol registry + recursive royalty router, proven by local test suite (CORE-01..07)
+- [ ] 01-02-PLAN.md — register/invoke/claim forge scripts + A→B→C demo driver, run locally zero-funds (SKILL-04, DEMO-01/02 local)
+- [ ] 01-03-PLAN.md — live atlantic-testnet deploy + on-chain A→B→C invoke/claim demo (DEMO-01, DEMO-02)
 
 ### Phase 2: Skill Packaging
 **Goal**: Cascade is a real Anthropic Skill that an agent runtime can load and act on, not just a deployed contract.
@@ -75,7 +78,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Recursive Royalty Core | 0/TBD | Not started | - |
+| 1. Recursive Royalty Core | 0/3 | Planned | - |
 | 2. Skill Packaging | 0/TBD | Not started | - |
 | 3. Smart-Account Agents (ERC-4337) | 0/TBD | Not started | - |
 | 4. Visualization, Docs & Submission | 0/TBD | Not started | - |
