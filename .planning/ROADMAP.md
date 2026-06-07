@@ -75,7 +75,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Static analysis (slither if installable) plus a security-reviewer agent pass are complete, and every CRITICAL/HIGH finding is resolved or documented with explicit rationale
   4. `Cascade.sol`'s external behavior/ABI is unchanged where already verified by Phases 1/3 tests (hardening is non-breaking — all prior tests still pass)
 **Plans**: 3 plans
-- [ ] 04-01-PLAN.md — NatSpec + named custom errors across Cascade + AA, revert-asserting tests flipped to selectors, forge fmt clean, full+fork suite green (HARD-01)
+- [x] 04-01-PLAN.md — NatSpec + named custom errors across Cascade + AA, revert-asserting tests flipped to selectors, forge fmt clean, full+fork suite green (HARD-01)
 - [ ] 04-02-PLAN.md — fuzz (conservation/no-overpay) + stateful invariant (solvency/no-wei-created) suites + committed .gas-snapshot (HARD-02)
 - [ ] 04-03-PLAN.md — slither attempt (documented fallback + SWC checklist) + security-reviewer pass + SECURITY.md with resolved/accepted findings (HARD-03)
 
@@ -114,6 +114,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Recursive Royalty Core | 3/3 | Complete   | 2026-06-07 |
 | 2. Skill Packaging | 1/1 | Complete   | 2026-06-07 |
 | 3. Smart-Account Agents (ERC-4337) | 3/3 | Complete   | 2026-06-07 |
-| 4. Contract Hardening & Security Review | 0/TBD | Not started | - |
+| 4. Contract Hardening & Security Review | 1/3 | In Progress|  |
 | 5. Mainnet Deployment & Live Demos | 0/TBD | Not started | - |
 | 6. Visualization, Docs & Submission | 0/TBD | Not started | - |

@@ -35,7 +35,7 @@
 
 ### Hardening — Contract Quality (publish-ready)
 
-- [ ] **HARD-01**: All public/external functions and events carry complete NatSpec; `require`-string reverts replaced with named custom errors
+- [x] **HARD-01**: All public/external functions and events carry complete NatSpec; `require`-string reverts replaced with named custom errors
 - [ ] **HARD-02**: Test suite expanded with fuzz + invariant coverage across Cascade + AA; `forge fmt` clean; a committed gas snapshot (`.gas-snapshot`)
 - [ ] **HARD-03**: Static analysis (slither, if installable) + a security-reviewer agent pass complete; all CRITICAL/HIGH findings resolved or explicitly documented with rationale
 
@@ -88,7 +88,7 @@
 | SKILL-04 | Phase 1 | Complete |
 | DEMO-01 | Phase 1 | Complete |
 | DEMO-02 | Phase 1 | Complete |
-| HARD-01 | Phase 4 | Pending |
+| HARD-01 | Phase 4 | Complete |
 | HARD-02 | Phase 4 | Pending |
 | HARD-03 | Phase 4 | Pending |
 | MAIN-01 | Phase 5 | Pending |
