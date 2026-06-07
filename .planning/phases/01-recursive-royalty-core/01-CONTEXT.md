@@ -24,7 +24,7 @@ A single on-chain `invoke` pays every creator in a declared dependency tree prop
 - **Exact payment**: `invoke` requires `msg.value == price`, else revert (no overpay/refund logic in v1).
 - **Pull-payment**: `invoke` only credits an internal `balances[creator]` mapping; creators call `claim()` to withdraw. No external calls during fan-out (reentrancy-safe, no payee can block the tree).
 - **Depth cap = 8**, enforced at register time (a skill's depth = 1 + max(dep depths); reject if > 8). Bounds invoke gas to a known maximum.
-- **Dust**: integer-division remainder from share splits is assigned to the invoked (top) skill's creator.
+- **Dust/rounding**: each skill's creator receives the exact remainder of its own level's split (`amount − Σ floor(routed to deps)`). Conservation holds exactly (Σ accrued == price) by construction — every wei is assigned. (Chosen over rolling dust to the top creator: simpler, gas-leaner, equally trustless. Matters given the tight ~0.01 PHRS demo budget.)
 - Emit events (`SkillRegistered`, `Invoked`, `RoyaltyAccrued`, `Claimed`) so the Phase 4 web visualization can reconstruct money flow from chain logs.
 
 </decisions>
