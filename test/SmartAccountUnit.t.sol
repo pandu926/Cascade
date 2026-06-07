@@ -66,7 +66,7 @@ contract SmartAccountUnitTest is Test {
         PackedUserOperation memory op = _op(_sign(ownerPk, userOpHash));
 
         vm.prank(stranger); // not the EntryPoint
-        vm.expectRevert(bytes("not from EntryPoint"));
+        vm.expectRevert(CascadeAccount.NotFromEntryPoint.selector);
         account.validateUserOp(op, userOpHash, 0);
     }
 
@@ -143,7 +143,7 @@ contract SmartAccountUnitTest is Test {
         bytes memory data = abi.encodeWithSelector(Probe.ping.selector, uint256(1));
 
         vm.prank(stranger);
-        vm.expectRevert(bytes("not authorized"));
+        vm.expectRevert(CascadeAccount.NotAuthorized.selector);
         account.execute(address(probe), 0, data);
     }
 
@@ -178,7 +178,7 @@ contract SmartAccountUnitTest is Test {
         func[0] = abi.encodeWithSelector(Probe.ping.selector, uint256(1));
 
         vm.prank(owner);
-        vm.expectRevert(bytes("len mismatch"));
+        vm.expectRevert(CascadeAccount.LengthMismatch.selector);
         account.executeBatch(dest, value, func);
     }
 

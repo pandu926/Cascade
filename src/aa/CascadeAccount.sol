@@ -25,13 +25,26 @@ contract CascadeAccount is IAccount {
     IEntryPoint public immutable entryPoint;
     address public immutable owner;
 
+    /// @notice Thrown when `execute`/`executeBatch` is called by neither the EntryPoint nor the owner.
+    error NotAuthorized();
+
+    /// @notice Thrown when `validateUserOp` is called by an address other than the EntryPoint.
+    error NotFromEntryPoint();
+
+    /// @notice Thrown when `executeBatch` receives dest/value/func arrays of unequal length.
+    error LengthMismatch();
+
+    /// @notice Deploy a single-owner ERC-4337 account.
+    /// @param anEntryPoint The canonical EntryPoint singleton this account trusts.
+    /// @param anOwner The ECDSA key authorized to sign UserOperations and call directly.
     constructor(IEntryPoint anEntryPoint, address anOwner) {
         entryPoint = anEntryPoint;
         owner = anOwner;
     }
 
+    /// @dev Restricts a call to the trusted EntryPoint or the account owner.
     modifier onlyEntryPointOrOwner() {
-        require(msg.sender == address(entryPoint) || msg.sender == owner, "not authorized");
+        if (msg.sender != address(entryPoint) && msg.sender != owner) revert NotAuthorized();
         _;
     }
 
@@ -41,7 +54,7 @@ contract CascadeAccount is IAccount {
         bytes32 userOpHash,
         uint256 missingAccountFunds
     ) external override returns (uint256 validationData) {
-        require(msg.sender == address(entryPoint), "not from EntryPoint");
+        if (msg.sender != address(entryPoint)) revert NotFromEntryPoint();
 
         bytes32 ethHash =
             keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", userOpHash));
@@ -64,7 +77,7 @@ contract CascadeAccount is IAccount {
         external
         onlyEntryPointOrOwner
     {
-        require(dest.length == func.length && value.length == func.length, "len mismatch");
+        if (dest.length != func.length || value.length != func.length) revert LengthMismatch();
         for (uint256 i; i < dest.length; ++i) {
             _call(dest[i], value[i], func[i]);
         }
