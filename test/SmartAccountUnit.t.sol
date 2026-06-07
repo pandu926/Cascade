@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {CascadeAccount} from "../src/aa/CascadeAccount.sol";
+import {AccountFactory} from "../src/aa/AccountFactory.sol";
 import {IEntryPoint} from "../src/aa/IEntryPoint.sol";
 import {PackedUserOperation} from "../src/aa/PackedUserOperation.sol";
 
@@ -218,5 +219,47 @@ contract SmartAccountUnitTest is Test {
         account.executeBatch(dest, value, func);
 
         assertEq(address(probe).balance, 0.3 ether, "value forwarded to targets");
+    }
+
+    // --- factory: CREATE2 determinism, idempotency, wiring -----------------
+
+    function test_factory_deterministic_address() public {
+        AccountFactory factory = new AccountFactory(IEntryPoint(entryPoint));
+        uint256 salt = 42;
+
+        address predicted = factory.getAddress(owner, salt);
+        address deployed = factory.createAccount(owner, salt);
+
+        assertEq(deployed, predicted, "getAddress must equal the CREATE2 deploy address");
+        assertGt(deployed.code.length, 0, "account code deployed");
+    }
+
+    function test_factory_createAccount_is_idempotent() public {
+        AccountFactory factory = new AccountFactory(IEntryPoint(entryPoint));
+        uint256 salt = 7;
+
+        address first = factory.createAccount(owner, salt);
+        address second = factory.createAccount(owner, salt); // must not redeploy or revert
+
+        assertEq(second, first, "second createAccount returns the existing address");
+    }
+
+    function test_factory_wires_owner_and_entryPoint() public {
+        AccountFactory factory = new AccountFactory(IEntryPoint(entryPoint));
+
+        address deployed = factory.createAccount(owner, 1);
+        CascadeAccount acct = CascadeAccount(payable(deployed));
+
+        assertEq(acct.owner(), owner, "owner wired through factory");
+        assertEq(address(acct.entryPoint()), entryPoint, "entryPoint wired through factory");
+    }
+
+    function test_factory_distinct_salts_yield_distinct_accounts() public {
+        AccountFactory factory = new AccountFactory(IEntryPoint(entryPoint));
+
+        address a = factory.createAccount(owner, 1);
+        address b = factory.createAccount(owner, 2);
+
+        assertTrue(a != b, "different salts -> different addresses");
     }
 }
