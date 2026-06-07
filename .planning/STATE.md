@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v0.7
 milestone_name: milestone
 status: executing
-stopped_at: ROADMAP.md and STATE.md written; REQUIREMENTS.md traceability updated
-last_updated: "2026-06-07T18:30:37.675Z"
-last_activity: 2026-06-07 -- Phase 1 planning complete
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-06-07T18:42:29.654Z"
+last_activity: 2026-06-07
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-07)
 
 **Core value:** One `invoke`, and every creator in the composition tree gets paid automatically, proportional to depth — the trustless recursive royalty split must work on-chain.
-**Current focus:** Phase 1 — Recursive Royalty Core
+**Current focus:** Phase 01 — Recursive Royalty Core
 
 ## Current Position
 
-Phase: 1 of 4 (Recursive Royalty Core)
-Plan: 0 of TBD in current phase
+Phase: 01 (Recursive Royalty Core) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-06-07 -- Phase 1 planning complete
+Last activity: 2026-06-07
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01 P01 | 18 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,8 @@ Recent decisions affecting current work:
 - Phase 1: Pull-payment (accrue + claim), never push — avoids reentrancy and payee-blocking
 - Phase 1: `Cascade.sol` account-agnostic so the core is never hostage to 4337 infra risk
 - Phase 3: ERC-4337 via self-bundle (`handleOps()` from EOA) — no public bundler on Pharos
+- [Phase ?]: Phase 1 Plan 01: per-level remainder credited to that level's creator (exact wei conservation, no separate dust pass)
+- [Phase ?]: Phase 1 Plan 01: monotonic skill ids + strictly-smaller dep refs make cycles impossible by construction (no runtime DFS)
 
 ### Pending Todos
 
@@ -84,6 +87,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07
-Stopped at: ROADMAP.md and STATE.md written; REQUIREMENTS.md traceability updated
+Last session: 2026-06-07T18:42:29.623Z
+Stopped at: Completed 01-01-PLAN.md
 Resume file: None

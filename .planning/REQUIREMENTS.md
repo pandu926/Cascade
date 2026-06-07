@@ -7,13 +7,13 @@
 
 ### Core — Royalty Contract
 
-- [ ] **CORE-01**: Skill author can register a skill with a price and a declared list of dependencies + percentage shares
-- [ ] **CORE-02**: Contract rejects dependency cycles and requires dependencies to be registered first (bottom-up)
-- [ ] **CORE-03**: Agent can invoke + pay for a skill in one transaction; payment accrues up the entire dependency tree proportionally
-- [ ] **CORE-04**: Recursion is depth-capped to bound gas
-- [ ] **CORE-05**: Royalties use pull-payment (accrue balance, claim separately), not push
-- [ ] **CORE-06**: Each creator can claim accumulated royalties
-- [ ] **CORE-07**: `Cascade.sol` is account-agnostic — works whether called by an EOA or a smart account
+- [x] **CORE-01**: Skill author can register a skill with a price and a declared list of dependencies + percentage shares
+- [x] **CORE-02**: Contract rejects dependency cycles and requires dependencies to be registered first (bottom-up)
+- [x] **CORE-03**: Agent can invoke + pay for a skill in one transaction; payment accrues up the entire dependency tree proportionally
+- [x] **CORE-04**: Recursion is depth-capped to bound gas
+- [x] **CORE-05**: Royalties use pull-payment (accrue balance, claim separately), not push
+- [x] **CORE-06**: Each creator can claim accumulated royalties
+- [x] **CORE-07**: `Cascade.sol` is account-agnostic — works whether called by an EOA or a smart account
 
 ### AA — ERC-4337 Integration
 
@@ -57,13 +57,13 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORE-01 | Phase 1 | Pending |
-| CORE-02 | Phase 1 | Pending |
-| CORE-03 | Phase 1 | Pending |
-| CORE-04 | Phase 1 | Pending |
-| CORE-05 | Phase 1 | Pending |
-| CORE-06 | Phase 1 | Pending |
-| CORE-07 | Phase 1 | Pending |
+| CORE-01 | Phase 1 | Complete |
+| CORE-02 | Phase 1 | Complete |
+| CORE-03 | Phase 1 | Complete |
+| CORE-04 | Phase 1 | Complete |
+| CORE-05 | Phase 1 | Complete |
+| CORE-06 | Phase 1 | Complete |
+| CORE-07 | Phase 1 | Complete |
 | AA-01 | Phase 3 | Pending |
 | AA-02 | Phase 3 | Pending |
 | AA-03 | Phase 3 | Pending |
