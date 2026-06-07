@@ -44,7 +44,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. An agent runtime can load `SKILL.md` and surface register / invoke / claim as natural-language actions from its YAML frontmatter
   2. `references/` files give copy-paste command templates plus error handling for each of register, invoke, and claim, mirroring the official engine layout
   3. `assets/networks.json` defines both atlantic-testnet and mainnet, and the forge scripts resolve their target network from it
-**Plans**: TBD
+**Plans**: 1 plan
+- [ ] 02-01-PLAN.md — SKILL.md entry point + references/{register,invoke,claim}.md wired to networks.json and the live testnet contract (SKILL-01/02/03)
 
 ### Phase 3: Smart-Account Agents (ERC-4337)
 **Goal**: An agent can be a smart account that pays multiple skills in a single self-bundled UserOperation through the real Pharos EntryPoint — proving the account-agnostic claim end-to-end.
@@ -79,6 +80,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Recursive Royalty Core | 3/3 | Complete   | 2026-06-07 |
-| 2. Skill Packaging | 0/TBD | Not started | - |
+| 2. Skill Packaging | 0/1 | Not started | - |
 | 3. Smart-Account Agents (ERC-4337) | 0/TBD | Not started | - |
 | 4. Visualization, Docs & Submission | 0/TBD | Not started | - |
