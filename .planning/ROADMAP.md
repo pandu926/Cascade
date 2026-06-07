@@ -74,7 +74,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The test suite gains fuzz + invariant coverage across Cascade and the AA layer, all green, with a committed `.gas-snapshot`
   3. Static analysis (slither if installable) plus a security-reviewer agent pass are complete, and every CRITICAL/HIGH finding is resolved or documented with explicit rationale
   4. `Cascade.sol`'s external behavior/ABI is unchanged where already verified by Phases 1/3 tests (hardening is non-breaking — all prior tests still pass)
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 04-01-PLAN.md — NatSpec + named custom errors across Cascade + AA, revert-asserting tests flipped to selectors, forge fmt clean, full+fork suite green (HARD-01)
+- [ ] 04-02-PLAN.md — fuzz (conservation/no-overpay) + stateful invariant (solvency/no-wei-created) suites + committed .gas-snapshot (HARD-02)
+- [ ] 04-03-PLAN.md — slither attempt (documented fallback + SWC checklist) + security-reviewer pass + SECURITY.md with resolved/accepted findings (HARD-03)
 
 ### Phase 5: Mainnet Deployment & Live Demos
 **Goal**: Deploy the hardened contracts to Pharos mainnet, verify source on the explorer, and demonstrate both the royalty split and the 4337 batch live on mainnet.
