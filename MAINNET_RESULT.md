@@ -6,7 +6,7 @@ Single source of truth for the Phase 5 mainnet artifacts (chainId **1672**, nati
 
 ## MAIN-01 Deployment (Cascade)
 
-**Status:** ✅ Deployed and live on mainnet. Source verification: see [Verification](#verification) below.
+**Status:** ✅ Deployed and live on mainnet. Source ✅ **verified** (RANK 1) — see [Verification](#verification) below.
 
 | Field | Value |
 |-------|-------|
@@ -58,4 +58,33 @@ Single source of truth for the Phase 5 mainnet artifacts (chainId **1672**, nati
 
 ## Verification
 
-_Pending — recorded in Task 2 below._
+**Status:** ✅ **Verified** on the first attempt (RANK 1 — Blockscout verifier, no API key). Not a fallback; source is confirmed `Pass - Verified` on the SocialScan command API backing pharosscan.
+
+| Field | Value |
+|-------|-------|
+| Rank reached | **RANK 1** (primary, no API key) |
+| Endpoint probe | `422` (route live) at `https://api.socialscan.io/pharos-mainnet/v1/explorer/command_api/contract` |
+| Verifier | `blockscout` |
+| Verifier URL | `https://api.socialscan.io/pharos-mainnet/v1/explorer/command_api/contract` |
+| Compiler | `0.8.24`, optimizer runs `200`, no constructor args |
+| Backend response | `Contract successfully verified` → status `OK` / `Pass - Verified` |
+| Verify GUID | `969638ddc7d55625563ac988076b8e82cf02fe5c22fcddc3fd828909f7851874` |
+
+### Verify command used (RANK 1)
+
+```bash
+forge verify-contract 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 src/Cascade.sol:Cascade \
+  --chain-id 1672 \
+  --compiler-version 0.8.24 \
+  --num-of-optimizations 200 \
+  --verifier blockscout \
+  --verifier-url https://api.socialscan.io/pharos-mainnet/v1/explorer/command_api/contract \
+  --watch
+```
+
+### Verified-source links
+
+- Contract (verified source): https://www.pharosscan.xyz/address/0x31bE4C6B5711913D818e377ebd809d4397FF3c84
+- SocialScan API record: https://api.socialscan.io/pharos-mainnet/v1/explorer/command_api/address/0x31be4c6b5711913d818e377ebd809d4397ff3c84
+
+Verification spent no PROS (submit-only, public source) and did not alter the deployed contract.
