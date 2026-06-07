@@ -110,3 +110,51 @@ gas-estimated (668K) before sending. The script *contracts* are unchanged; only 
 mechanism differs. This keeps the demo within budget and deterministic.
 
 ---
+
+## Task 3 — Live invoke + claim (DEMO-02): three balances rise, a creator withdraws
+
+### One paid invoke of C fans royalties up the whole tree
+
+- **Invoke tx:** [`0x67bfa70481cd8fce39de58e4bd563da6af1707f8013a4ccee95ba7af07b39d93`](https://atlantic.pharosscan.xyz/tx/0x67bfa70481cd8fce39de58e4bd563da6af1707f8013a4ccee95ba7af07b39d93) — status 1, gasUsed 127,281
+- Payer: `0x67680b09bB422cC510669bd5208D947066D4aeaE`, value sent: `0.001 ether` (== skill C price, exact-payment enforced).
+- Emitted **one `Invoked` + three `RoyaltyAccrued` events** (one per creator) in a single transaction.
+
+**Accrued creator balances (read via `cast call balances(address)`):**
+
+| Creator | id | BEFORE (wei) | AFTER (wei) | Delta (wei) | Delta (ether) | Expected |
+|---------|----|--------------|-------------|-------------|---------------|----------|
+| A | 1 | 0 | 200000000000000 | **+200000000000000** | +0.0002 | +0.0002 ✅ |
+| B | 2 | 0 | 300000000000000 | **+300000000000000** | +0.0003 | +0.0003 ✅ |
+| C | 3 | 0 | 500000000000000 | **+500000000000000** | +0.0005 | +0.0005 ✅ |
+| **Σ** | | 0 | **1000000000000000** | **+1000000000000000** | **+0.001** | == price ✅ |
+
+All three distinct creator balances rose in one tx, depth-proportional, and Σ deltas == the
+invoke price exactly — reproducing the locally-proven result on-chain. **DEMO-02 satisfied.** ✅
+
+### A creator claims their accrued royalty on-chain
+
+Claimed from **creatorA** (the deepest leaf — best shows recursive depth-payment reaching the bottom):
+
+- **Claim tx:** [`0xe90d8b2f28a3207134786111b45369cc584c4bb9467f9827b5751c2b54c57120`](https://atlantic.pharosscan.xyz/tx/0xe90d8b2f28a3207134786111b45369cc584c4bb9467f9827b5751c2b54c57120) — status 1, gasUsed 29,925, emitted `Claimed(creatorA, 2e14)`.
+- creatorA accrued balance: `200000000000000` → **`0`** (zeroed). ✅
+- creatorA wallet balance: `802712000000000` → `942862000000000` — **net +140,150,000,000,000 wei**,
+  which is the claimed `200000000000000` minus this tx's gas (`29,925 × 2 gwei = 59,850,000,000,000`).
+  The full 2e14 was transferred out of the contract; the wallet delta is smaller only because the
+  same wallet paid the claim gas. ✅
+
+### Budget outcome
+
+Payer wallet end balance ≈ `0.0058 PHRS` (started 0.01) — well within budget, ~0.0042 PHRS spent
+across funding + deploy (incl. the one wasted 10-gwei forge failure) + invoke value + invoke gas.
+No partial/half-spent demo; every step landed with status 1 except the one diagnosed forge CREATE.
+
+---
+
+## Summary of all on-chain artifacts
+
+- **Contract:** `0xd41C32562D0BE20D354120E1De11A91abC340F50` — https://atlantic.pharosscan.xyz/address/0xd41C32562D0BE20D354120E1De11A91abC340F50
+- **Deploy:** `0x5669ab63166f7fd3ec5518c89c271b1cf784031500f07b6d960eb6cbba897851`
+- **Register A/B/C:** `0x20838fb9...5139` / `0x4142cf4c...9824` / `0x6e9e9f7f...b4ce`
+- **Invoke C:** `0x67bfa704...9d93`
+- **Claim (A):** `0xe90d8b2f...7120`
+- **skillCount() == 3** | **Σ invoke deltas == 0.001 ether** | **claim zeroed A's accrued balance**
