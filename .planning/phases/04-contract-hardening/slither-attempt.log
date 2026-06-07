@@ -1,0 +1,300 @@
+================================================================
+SLITHER STATIC-ANALYSIS ATTEMPT LOG — Plan 04-03 / HARD-03
+Recorded: 2026-06-07T22:04:05Z
+Environment: 100% local sandbox, zero funds. Python 3.12.3, forge present.
+================================================================
+
+### STEP 1 — pip install (system) — FAILED (PEP 668)
+$ pip install --user slither-analyzer
+error: externally-managed-environment (PEP 668).
+  pip refused to install into the system Python.
+
+### STEP 2 — venv install — SUCCEEDED
+$ python3 -m venv /tmp/slither-venv && /tmp/slither-venv/bin/pip install slither-analyzer
+  => Successfully installed slither-analyzer-0.11.5 solc-select-1.2.0 crytic-compile-0.3.11 (+deps)
+
+### STEP 3 — solc provisioning via solc-select — SUCCEEDED
+$ solc-select install 0.8.24 && solc-select use 0.8.24
+  => Version '0.8.24' installed. Switched global version to 0.8.24.
+
+### STEP 4 — slither run — SUCCEEDED (14 results, exit 255 = findings present, not an error)
+$ SOLC_VERSION=0.8.24 slither .
+----------------------------------------------------------------
+'forge clean' running (wd: /root/pharos)
+'forge config --json' running
+'forge build --build-info --skip ./test/** ./script/** --force' running (wd: /root/pharos)
+INFO:Detectors:
+Detector: arbitrary-send-eth
+CascadeAccount._payPrefund(uint256) (src/aa/CascadeAccount.sol#95-100) sends eth to arbitrary user
+	Dangerous calls:
+	- (ok,None) = address(msg.sender).call{value: missingAccountFunds}() (src/aa/CascadeAccount.sol#97)
+CascadeAccount._call(address,uint256,bytes) (src/aa/CascadeAccount.sol#103-110) sends eth to arbitrary user
+	Dangerous calls:
+	- (success,result) = target.call{value: value}(data) (src/aa/CascadeAccount.sol#104)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#functions-that-send-ether-to-arbitrary-destinations
+INFO:Detectors:
+Detector: uninitialized-local
+Cascade.register(uint256,uint256[],uint256[]).shareSum (src/Cascade.sol#101) is a local variable never initialized
+Cascade.register(uint256,uint256[],uint256[]).maxDepDepth (src/Cascade.sol#102) is a local variable never initialized
+Cascade._distribute(uint256,uint256).routedSum (src/Cascade.sol#160) is a local variable never initialized
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-local-variables
+INFO:Detectors:
+Detector: missing-zero-check
+CascadeAccount.constructor(IEntryPoint,address).anOwner (src/aa/CascadeAccount.sol#39) lacks a zero-check on :
+		- owner = anOwner (src/aa/CascadeAccount.sol#41)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-zero-address-validation
+INFO:Detectors:
+Detector: calls-loop
+CascadeAccount._call(address,uint256,bytes) (src/aa/CascadeAccount.sol#103-110) has external calls inside a loop: (success,result) = target.call{value: value}(data) (src/aa/CascadeAccount.sol#104)
+	Calls stack containing the loop:
+		CascadeAccount.executeBatch(address[],uint256[],bytes[])
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
+INFO:Detectors:
+Detector: reentrancy-events
+Reentrancy in Cascade.claim() (src/Cascade.sol#142-150):
+	External calls:
+	- (ok,None) = address(msg.sender).call{value: amount}() (src/Cascade.sol#146)
+	Event emitted after the call(s):
+	- Claimed(msg.sender,amount) (src/Cascade.sol#148)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-4
+INFO:Detectors:
+Detector: assembly
+CascadeAccount._call(address,uint256,bytes) (src/aa/CascadeAccount.sol#103-110) uses assembly
+	- INLINE ASM (src/aa/CascadeAccount.sol#106-108)
+CascadeAccount._recover(bytes32,bytes) (src/aa/CascadeAccount.sol#115-131) uses assembly
+	- INLINE ASM (src/aa/CascadeAccount.sol#121-125)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+INFO:Detectors:
+Detector: low-level-calls
+Low level call in Cascade.claim() (src/Cascade.sol#142-150):
+	- (ok,None) = address(msg.sender).call{value: amount}() (src/Cascade.sol#146)
+Low level call in CascadeAccount._payPrefund(uint256) (src/aa/CascadeAccount.sol#95-100):
+	- (ok,None) = address(msg.sender).call{value: missingAccountFunds}() (src/aa/CascadeAccount.sol#97)
+Low level call in CascadeAccount._call(address,uint256,bytes) (src/aa/CascadeAccount.sol#103-110):
+	- (success,result) = target.call{value: value}(data) (src/aa/CascadeAccount.sol#104)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+INFO:Detectors:
+Detector: too-many-digits
+AccountFactory.getAddress(address,uint256) (src/aa/AccountFactory.sol#39-43) uses literals with too many digits:
+	- codeHash = keccak256(bytes)(abi.encodePacked(type()(CascadeAccount).creationCode,abi.encode(entryPoint,owner))) (src/aa/AccountFactory.sol#40)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#too-many-digits
+INFO:Slither:. analyzed (5 contracts with 101 detectors), 14 result(s) found
+----------------------------------------------------------------
+
+### STEP 5 — slither --checklist (markdown) for the record
+----------------------------------------------------------------
+**THIS CHECKLIST IS NOT COMPLETE**. Use `--show-ignored-findings` to show all the results.
+Summary
+ - [arbitrary-send-eth](#arbitrary-send-eth) (2 results) (High)
+ - [uninitialized-local](#uninitialized-local) (3 results) (Medium)
+ - [missing-zero-check](#missing-zero-check) (1 results) (Low)
+ - [calls-loop](#calls-loop) (1 results) (Low)
+ - [reentrancy-events](#reentrancy-events) (1 results) (Low)
+ - [assembly](#assembly) (2 results) (Informational)
+ - [low-level-calls](#low-level-calls) (3 results) (Informational)
+ - [too-many-digits](#too-many-digits) (1 results) (Informational)
+## arbitrary-send-eth
+Impact: High
+Confidence: Medium
+ - [ ] ID-0
+[CascadeAccount._payPrefund(uint256)](src/aa/CascadeAccount.sol#L95-L100) sends eth to arbitrary user
+	Dangerous calls:
+	- [(ok,None) = address(msg.sender).call{value: missingAccountFunds}()](src/aa/CascadeAccount.sol#L97)
+
+src/aa/CascadeAccount.sol#L95-L100
+
+
+ - [ ] ID-1
+[CascadeAccount._call(address,uint256,bytes)](src/aa/CascadeAccount.sol#L103-L110) sends eth to arbitrary user
+	Dangerous calls:
+	- [(success,result) = target.call{value: value}(data)](src/aa/CascadeAccount.sol#L104)
+
+src/aa/CascadeAccount.sol#L103-L110
+
+
+## uninitialized-local
+Impact: Medium
+Confidence: Medium
+ - [ ] ID-2
+[Cascade.register(uint256,uint256[],uint256[]).shareSum](src/Cascade.sol#L101) is a local variable never initialized
+
+src/Cascade.sol#L101
+
+
+ - [ ] ID-3
+[Cascade.register(uint256,uint256[],uint256[]).maxDepDepth](src/Cascade.sol#L102) is a local variable never initialized
+
+src/Cascade.sol#L102
+
+
+ - [ ] ID-4
+[Cascade._distribute(uint256,uint256).routedSum](src/Cascade.sol#L160) is a local variable never initialized
+
+src/Cascade.sol#L160
+
+
+## missing-zero-check
+Impact: Low
+Confidence: Medium
+ - [ ] ID-5
+[CascadeAccount.constructor(IEntryPoint,address).anOwner](src/aa/CascadeAccount.sol#L39) lacks a zero-check on :
+		- [owner = anOwner](src/aa/CascadeAccount.sol#L41)
+
+src/aa/CascadeAccount.sol#L39
+
+
+## calls-loop
+Impact: Low
+Confidence: Medium
+ - [ ] ID-6
+[CascadeAccount._call(address,uint256,bytes)](src/aa/CascadeAccount.sol#L103-L110) has external calls inside a loop: [(success,result) = target.call{value: value}(data)](src/aa/CascadeAccount.sol#L104)
+	Calls stack containing the loop:
+		CascadeAccount.executeBatch(address[],uint256[],bytes[])
+
+src/aa/CascadeAccount.sol#L103-L110
+
+
+## reentrancy-events
+Impact: Low
+Confidence: Medium
+ - [ ] ID-7
+Reentrancy in [Cascade.claim()](src/Cascade.sol#L142-L150):
+	External calls:
+	- [(ok,None) = address(msg.sender).call{value: amount}()](src/Cascade.sol#L146)
+	Event emitted after the call(s):
+	- [Claimed(msg.sender,amount)](src/Cascade.sol#L148)
+
+src/Cascade.sol#L142-L150
+
+
+## assembly
+Impact: Informational
+Confidence: High
+ - [ ] ID-8
+[CascadeAccount._call(address,uint256,bytes)](src/aa/CascadeAccount.sol#L103-L110) uses assembly
+	- [INLINE ASM](src/aa/CascadeAccount.sol#L106-L108)
+
+src/aa/CascadeAccount.sol#L103-L110
+
+
+ - [ ] ID-9
+[CascadeAccount._recover(bytes32,bytes)](src/aa/CascadeAccount.sol#L115-L131) uses assembly
+	- [INLINE ASM](src/aa/CascadeAccount.sol#L121-L125)
+
+src/aa/CascadeAccount.sol#L115-L131
+
+
+## low-level-calls
+Impact: Informational
+Confidence: High
+ - [ ] ID-10
+Low level call in [CascadeAccount._call(address,uint256,bytes)](src/aa/CascadeAccount.sol#L103-L110):
+	- [(success,result) = target.call{value: value}(data)](src/aa/CascadeAccount.sol#L104)
+
+src/aa/CascadeAccount.sol#L103-L110
+
+
+ - [ ] ID-11
+Low level call in [CascadeAccount._payPrefund(uint256)](src/aa/CascadeAccount.sol#L95-L100):
+	- [(ok,None) = address(msg.sender).call{value: missingAccountFunds}()](src/aa/CascadeAccount.sol#L97)
+
+src/aa/CascadeAccount.sol#L95-L100
+
+
+ - [ ] ID-12
+Low level call in [Cascade.claim()](src/Cascade.sol#L142-L150):
+	- [(ok,None) = address(msg.sender).call{value: amount}()](src/Cascade.sol#L146)
+
+src/Cascade.sol#L142-L150
+
+
+## too-many-digits
+Impact: Informational
+Confidence: Medium
+ - [ ] ID-13
+[AccountFactory.getAddress(address,uint256)](src/aa/AccountFactory.sol#L39-L43) uses literals with too many digits:
+	- [codeHash = keccak256(bytes)(abi.encodePacked(type()(CascadeAccount).creationCode,abi.encode(entryPoint,owner)))](src/aa/AccountFactory.sol#L40)
+
+src/aa/AccountFactory.sol#L39-L43
+
+
+----------------------------------------------------------------
+END OF SLITHER ATTEMPT LOG
+
+================================================================
+MANUAL SWC-REGISTRY CHECKLIST — applied to all contracts
+(Run in addition to slither, per 04-CONTEXT HARD-03 clause.)
+Contracts: src/Cascade.sol, src/aa/CascadeAccount.sol,
+           src/aa/AccountFactory.sol, src/aa/{IEntryPoint,IAccount,PackedUserOperation}.sol
+================================================================
+
+[SWC-101] Integer Over/Underflow
+  CONCLUSION: NOT VULNERABLE. Pragma ^0.8.24 → checked arithmetic by default.
+  - Cascade.register: `id = ++skillCount` (checked), `shareSum += depShares[i]`
+    bounded by `shareSum > BPS revert`. depth = maxDepDepth+1 bounded by MAX_DEPTH=8.
+  - Cascade._distribute: `routed = amount*depShares[i]/BPS` — multiplication is checked;
+    depShares[i] <= 10000 by register-time invariant; amount <= original msg.value.
+    `creatorCut = amount - routedSum` cannot underflow: routedSum is a sum of
+    floor(amount*share/BPS) terms whose shares sum to <= BPS, so routedSum <= amount.
+  - CascadeAccount: no unchecked blocks; loop index `++i` checked.
+
+[SWC-104] Unchecked Call Return Value
+  CONCLUSION: HANDLED, distinction is intentional & documented.
+  - Cascade.claim L146-147: return value CHECKED — `if (!ok) revert TransferFailed()`.
+  - CascadeAccount._payPrefund L97-98: return value INTENTIONALLY IGNORED `(ok);`.
+    Rationale: ERC-4337 v0.7 BaseAccount semantics — the EntryPoint itself enforces the
+    prefund; the account must not revert here or it breaks validation. Documented in NatSpec.
+  - CascadeAccount._call L104-109: success CHECKED — bubbles inner revert via assembly.
+
+[SWC-105/106] Unprotected Withdrawal / SELFDESTRUCT
+  CONCLUSION: NOT VULNERABLE.
+  - No selfdestruct anywhere.
+  - Cascade.claim only ever pays msg.sender its own accrued balance (then zeroes it).
+  - CascadeAccount.execute/executeBatch gated by onlyEntryPointOrOwner.
+  - CascadeAccount.validateUserOp gated by `msg.sender == entryPoint` (NotFromEntryPoint).
+
+[SWC-107] Reentrancy
+  CONCLUSION: NOT VULNERABLE.
+  - Cascade.claim follows strict CEI: balance zeroed (effect) BEFORE the external
+    call (interaction). A re-entrant claim sees balance 0 → no double-pay.
+  - Cascade._distribute performs NO external calls — pure internal balance credits,
+    so the recursive fan-out is reentrancy-safe and no payee can block the tree.
+  - slither flags only "reentrancy-events" (event emitted after call in claim) — this is
+    informational; no state mutation follows the call, so it is not exploitable. ACCEPTED.
+
+[SWC-113 / SWC-128] DoS (failed call / unbounded operation / gas-limit)
+  CONCLUSION: NOT VULNERABLE.
+  - Pull-payment model: a single failing payee cannot block others (each claims own).
+  - _distribute recursion bounded by MAX_DEPTH=8, enforced at register time
+    (DepthExceeded). Per-skill dep arrays are caller-supplied but each invoke pays a
+    fixed price and traverses a tree whose depth is capped; breadth is paid for by the caller.
+  - executeBatch loops over caller-supplied arrays (length checked equal); caller bears gas.
+
+[SWC-115] Authorization through tx.origin
+  CONCLUSION: NOT VULNERABLE. `tx.origin` appears nowhere. All auth uses msg.sender.
+
+[SWC-117] Signature Malleability
+  CONCLUSION: NOT VULNERABLE. CascadeAccount._recover enforces EIP-2 low-s:
+  `if (uint256(s) > SECP256K1_HALF_N) return address(0)` and `v in {27,28}`, plus
+  65-byte length check and address(0) rejection. Returns address(0) on any anomaly so
+  validateUserOp reports SIG_VALIDATION_FAILED (never reverts). Replay is bound by the
+  EntryPoint userOpHash (chainId + EntryPoint + nonce), not this contract's concern.
+
+[SWC-103] Floating Pragma
+  CONCLUSION: ACCEPTED (informational). Pragma is `^0.8.24`. Caret floats forward within
+  0.8.x. For a hackathon/local build this is intentional (forge pins solc 0.8.24 via
+  foundry.toml). Documented in SECURITY.md as an accepted LOW; pin to `=0.8.24` only at
+  mainnet-deploy time if reproducible-bytecode verification requires it.
+
+[Other classes checked — no finding]
+  - SWC-116 (block.timestamp dependence): not used for logic.
+  - SWC-120 (weak randomness): no randomness used.
+  - SWC-132 (unexpected ether balance): Cascade never relies on address(this).balance for
+    accounting — it tracks `balances[]` explicitly; force-fed ether (selfdestruct) cannot
+    corrupt the per-creator ledger.
+  - Uninitialized-local (slither): shareSum/maxDepDepth/routedSum default to 0 in Solidity;
+    relying on default-zero init is safe and idiomatic. ACCEPTED informational.
+  - missing-zero-check on owner (slither): constructor arg; a zero owner simply yields an
+    unusable account (no valid signer). Factory callers control the arg. ACCEPTED LOW.
+  - too-many-digits (slither): the 0xff CREATE2 prefix literal. Standard, ACCEPTED informational.
+END OF MANUAL SWC CHECKLIST
