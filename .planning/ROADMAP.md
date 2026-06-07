@@ -12,7 +12,7 @@ Cascade ships the trustless recursive royalty split first — the whole idea —
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Recursive Royalty Core** - Contract + forge scripts + toy tree so one invoke pays three creators on testnet
+- [x] **Phase 1: Recursive Royalty Core** - Contract + forge scripts + toy tree so one invoke pays three creators on testnet (completed 2026-06-07)
 - [ ] **Phase 2: Skill Packaging** - SKILL.md, references, and networks.json make it a loadable, reusable Skill
 - [ ] **Phase 3: Smart-Account Agents (ERC-4337)** - Agents batch skill payments into one self-bundled UserOp via the real EntryPoint
 - [ ] **Phase 4: Visualization, Docs & Submission** - Animated money-flow demo, README, video, DoraHacks submission
@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 - [x] 01-01-PLAN.md — Cascade.sol registry + recursive royalty router, proven by local test suite (CORE-01..07)
 - [x] 01-02-PLAN.md — register/invoke/claim forge scripts + A→B→C demo driver, run locally zero-funds (SKILL-04, DEMO-01/02 local)
-- [ ] 01-03-PLAN.md — live atlantic-testnet deploy + on-chain A→B→C invoke/claim demo (DEMO-01, DEMO-02)
+- [x] 01-03-PLAN.md — live atlantic-testnet deploy + on-chain A→B→C invoke/claim demo (DEMO-01, DEMO-02)
 
 ### Phase 2: Skill Packaging
 **Goal**: Cascade is a real Anthropic Skill that an agent runtime can load and act on, not just a deployed contract.
@@ -78,7 +78,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Recursive Royalty Core | 2/3 | In Progress|  |
+| 1. Recursive Royalty Core | 3/3 | Complete   | 2026-06-07 |
 | 2. Skill Packaging | 0/TBD | Not started | - |
 | 3. Smart-Account Agents (ERC-4337) | 0/TBD | Not started | - |
 | 4. Visualization, Docs & Submission | 0/TBD | Not started | - |

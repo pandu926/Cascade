@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.7
 milestone_name: milestone
-status: executing
+status: verifying
 stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-06-07T18:51:24.307Z"
+last_updated: "2026-06-07T19:17:45.247Z"
 last_activity: 2026-06-07
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
-  percent: 0
+  completed_plans: 3
+  percent: 25
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 
 Phase: 01 (Recursive Royalty Core) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-07
 
-Progress: [███████░░░] 67%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [███████░░░] 67%
 *Updated after each plan completion*
 | Phase 01 P01 | 18 | 3 tasks | 5 files |
 | Phase 01 P02 | 12 | 2 tasks | 7 files |
+| Phase 01 P03 | 18 | 3 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,9 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 1 Plan 01: monotonic skill ids + strictly-smaller dep refs make cycles impossible by construction (no runtime DFS)
 - [Phase ?]: Phase 1 Plan 02: forge scripts read all params via vm.env*; RPC resolved via --rpc-url flag (no hardcoded endpoint)
 - [Phase ?]: Phase 1 Plan 02: DemoTree keys default to anvil mnemonic so local runs are pre-funded; env overrides for the live wave (same code, only flags differ)
+- [Phase ?]: Phase 1 Plan 03: chose 2 gwei gas (2x base fee) — cast-gas-price's 10 gwei suggestion would have exceeded the 0.01 PHRS demo budget
+- [Phase ?]: Phase 1 Plan 03: switched live broadcast from forge script to cast send — forge ignored --gas-price and sent a failed 10-gwei CREATE; cast send with explicit --legacy --gas-price worked
+- [Phase ?]: Phase 1 Plan 03: used 3 fresh funded creator wallets (CREATOR_*_KEY override) instead of shared anvil-default keys for a deterministic on-chain demo
 
 ### Pending Todos
 
@@ -90,6 +94,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-07T18:50:54.939Z
+Last session: 2026-06-07T19:17:15.866Z
 Stopped at: Completed 01-01-PLAN.md
 Resume file: None
