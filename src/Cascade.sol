@@ -25,10 +25,56 @@ contract Cascade {
         uint256[] depShares;
     }
 
+    /// @notice Emitted once per successful `register`, marking a skill immutable.
+    /// @param id The new monotonic skill id (>= 1).
+    /// @param creator The address that registered (and will accrue) this skill's cut.
+    /// @param price The exact native-token price required to `invoke` this skill.
     event SkillRegistered(uint256 indexed id, address indexed creator, uint256 price);
+
+    /// @notice Emitted once per successful `invoke`, after the payment has fanned out.
+    /// @param skillId The invoked skill id.
+    /// @param payer The caller that paid `amount` to invoke the skill.
+    /// @param amount The native value paid (equals the skill's `price`).
     event Invoked(uint256 indexed skillId, address indexed payer, uint256 amount);
+
+    /// @notice Emitted for each creator credited during a single `invoke` fan-out.
+    /// @param skillId The skill whose creator is being credited at this tree level.
+    /// @param creator The credited creator address.
+    /// @param amount The wei added to the creator's claimable balance at this level.
     event RoyaltyAccrued(uint256 indexed skillId, address indexed creator, uint256 amount);
+
+    /// @notice Emitted when a creator withdraws their accrued balance via `claim`.
+    /// @param creator The withdrawing creator.
+    /// @param amount The wei transferred out to the creator.
     event Claimed(address indexed creator, uint256 amount);
+
+    /// @notice Thrown when `register` is called with `depIds.length != depShares.length`.
+    error LengthMismatch();
+
+    /// @notice Thrown when a declared dependency id is 0 or not strictly smaller than the
+    ///         new skill's id (the forward-reference / cycle guard).
+    /// @param depId The offending dependency id.
+    error BadDependency(uint256 depId);
+
+    /// @notice Thrown when the sum of declared dependency shares exceeds 100% (10000 bps).
+    /// @param sum The offending share sum, in basis points.
+    error SharesExceedMax(uint256 sum);
+
+    /// @notice Thrown when a registration would produce a dependency tree deeper than MAX_DEPTH.
+    /// @param depth The offending resulting depth.
+    error DepthExceeded(uint256 depth);
+
+    /// @notice Thrown when `invoke` targets a skill id of 0 or above `skillCount`.
+    /// @param id The offending skill id.
+    error UnknownSkill(uint256 id);
+
+    /// @notice Thrown when `invoke`'s `msg.value` does not exactly equal the skill price.
+    /// @param sent The value actually sent.
+    /// @param expected The exact price the skill requires.
+    error WrongValue(uint256 sent, uint256 expected);
+
+    /// @notice Thrown when the native-token transfer in `claim` fails.
+    error TransferFailed();
 
     /// @notice Accrued, claimable balance per creator address.
     mapping(address => uint256) public balances;
@@ -48,7 +94,7 @@ contract Cascade {
         external
         returns (uint256 id)
     {
-        require(depIds.length == depShares.length, "len mismatch");
+        if (depIds.length != depShares.length) revert LengthMismatch();
 
         id = ++skillCount;
 
@@ -58,7 +104,7 @@ contract Cascade {
             uint256 depId = depIds[i];
             // Strictly-smaller, already-registered id: makes cycles impossible by
             // construction and enforces bottom-up registration. id 0 is invalid.
-            require(depId != 0 && depId < id, "bad dep id");
+            if (depId == 0 || depId >= id) revert BadDependency(depId);
 
             shareSum += depShares[i];
 
@@ -67,10 +113,10 @@ contract Cascade {
                 maxDepDepth = depDepth;
             }
         }
-        require(shareSum <= BPS, "shares > 10000");
+        if (shareSum > BPS) revert SharesExceedMax(shareSum);
 
         uint256 depth = maxDepDepth + 1;
-        require(depth <= MAX_DEPTH, "depth > 8");
+        if (depth > MAX_DEPTH) revert DepthExceeded(depth);
 
         skills[id] = Skill({
             creator: msg.sender,
@@ -87,8 +133,8 @@ contract Cascade {
     /// @dev Exact payment only. Credits internal balances exclusively — no external
     ///      calls during fan-out (reentrancy-safe; no payee can block the tree).
     function invoke(uint256 skillId) external payable {
-        require(skillId != 0 && skillId <= skillCount, "no skill");
-        require(msg.value == skills[skillId].price, "wrong value");
+        if (skillId == 0 || skillId > skillCount) revert UnknownSkill(skillId);
+        if (msg.value != skills[skillId].price) revert WrongValue(msg.value, skills[skillId].price);
 
         _distribute(skillId, msg.value);
 
@@ -104,7 +150,7 @@ contract Cascade {
         balances[msg.sender] = 0;
         if (amount != 0) {
             (bool ok,) = payable(msg.sender).call{value: amount}("");
-            require(ok, "transfer failed");
+            if (!ok) revert TransferFailed();
             emit Claimed(msg.sender, amount);
         }
     }

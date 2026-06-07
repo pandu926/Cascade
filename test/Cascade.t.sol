@@ -105,7 +105,7 @@ contract CascadeTest is Test {
         vm.prank(creatorA);
         cascade.register(0, _empty(), _empty()); // id 1
         vm.prank(creatorB);
-        vm.expectRevert(bytes("bad dep id"));
+        vm.expectPartialRevert(Cascade.BadDependency.selector);
         cascade.register(0, _one(2), _one(1000)); // references id 2 which doesn't exist yet
     }
 
@@ -113,7 +113,7 @@ contract CascadeTest is Test {
         // A skill cannot reference an id >= its own (forward reference => cycle).
         // The very first skill (id 1) referencing id 1 is a self-cycle.
         vm.prank(creatorA);
-        vm.expectRevert(bytes("bad dep id"));
+        vm.expectPartialRevert(Cascade.BadDependency.selector);
         cascade.register(0, _one(1), _one(1000));
     }
 
@@ -131,13 +131,13 @@ contract CascadeTest is Test {
         shares[1] = 4001; // 10001 total > 10000
 
         vm.prank(creatorC);
-        vm.expectRevert(bytes("shares > 10000"));
+        vm.expectPartialRevert(Cascade.SharesExceedMax.selector);
         cascade.register(1 ether, ids, shares);
     }
 
     function test_register_reverts_when_dep_id_is_zero() public {
         vm.prank(creatorA);
-        vm.expectRevert(bytes("bad dep id"));
+        vm.expectPartialRevert(Cascade.BadDependency.selector);
         cascade.register(0, _one(0), _one(1000));
     }
 
@@ -145,7 +145,7 @@ contract CascadeTest is Test {
         vm.prank(creatorA);
         uint256 idA = cascade.register(0, _empty(), _empty());
         vm.prank(creatorB);
-        vm.expectRevert(bytes("len mismatch"));
+        vm.expectRevert(Cascade.LengthMismatch.selector);
         cascade.register(0, _one(idA), _empty());
     }
 
@@ -163,7 +163,7 @@ contract CascadeTest is Test {
         }
         // 9th registration trips the cap.
         vm.prank(creatorA);
-        vm.expectRevert(bytes("depth > 8"));
+        vm.expectPartialRevert(Cascade.DepthExceeded.selector);
         cascade.register(0, _one(prev), _one(1000));
     }
 
@@ -175,19 +175,19 @@ contract CascadeTest is Test {
         // Underpayment.
         vm.deal(payer, PRICE);
         vm.prank(payer);
-        vm.expectRevert(bytes("wrong value"));
+        vm.expectPartialRevert(Cascade.WrongValue.selector);
         cascade.invoke{value: PRICE - 1}(idC);
 
         // Overpayment.
         vm.deal(payer, PRICE + 1);
         vm.prank(payer);
-        vm.expectRevert(bytes("wrong value"));
+        vm.expectPartialRevert(Cascade.WrongValue.selector);
         cascade.invoke{value: PRICE + 1}(idC);
     }
 
     function test_invoke_reverts_on_unknown_skill() public {
         vm.prank(payer);
-        vm.expectRevert(bytes("no skill"));
+        vm.expectPartialRevert(Cascade.UnknownSkill.selector);
         cascade.invoke{value: 0}(0);
     }
 
