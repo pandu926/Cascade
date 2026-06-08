@@ -402,12 +402,79 @@
     const txRoyalty = document.getElementById("tx-royalty");
     if (txRoyalty) txRoyalty.href = data.network.explorer + "tx/" + data.royaltyDemo.invokeTxHash;
 
-    // Task 3 attaches the batch viz + AA grid via window.__cascadeData.
-    if (typeof window.__cascadeInitBatch === "function") {
-      window.__cascadeInitBatch(data, TreeViz);
-    }
-    // expose the engine so the batch init (same file, Task 3) can reuse it
+    // expose the engine, then build the 4337 batch view from the same primitives
     window.__cascadeTreeViz = TreeViz;
+    initBatch(data);
+  }
+
+  /* =========================================================================
+     4337 batch view (MAIN-03): the SAME tree, driven by ONE self-bundled
+     handleOps that batches TWO invokes. Reuses the TreeViz engine with two
+     passes so cumulative balances land exactly on the on-chain doubled values
+     (A 0.0004 / B 0.0006 / C 0.001 PROS) — derived from data, not hardcoded.
+     ========================================================================= */
+  function initBatch(data) {
+    const b = data.batchDemo;
+    const expl = data.network.explorer;
+    const TreeViz = window.__cascadeTreeViz;
+
+    const batch = new TreeViz({
+      svgEl: document.getElementById("svg-batch"),
+      balancesListEl: document.getElementById("balances-batch"),
+      sigmaValEl: null, // event-count line is static in the HTML
+      playBtn: document.getElementById("play-batch"),
+      playLabelEl: document.querySelector("#play-batch .play-label"),
+      nodes: data.tree,
+      totalWei: b.cumulativeWei ? b.cumulativeWei.C : data.royaltyDemo.sumWei,
+      sigmaMode: "static",
+      creditLabel: "Replay the batch",
+      passes: 2 // one handleOps batched two invokes -> balances reach cumulative 2x
+    });
+    window.__cascadeBatch = batch;
+
+    // batch tx-proof + account line
+    const txBatch = document.getElementById("tx-batch");
+    if (txBatch) txBatch.href = expl + "tx/" + b.handleOpsTxHash;
+    const acctLine = document.getElementById("batch-account-line");
+    if (acctLine) acctLine.textContent = "payer = smart account " + truncAddr(b.account);
+
+    // event-count sigma (static, but reflect the real decoded counts)
+    const sigBatch = document.getElementById("sigma-batch-val");
+    if (sigBatch) {
+      sigBatch.textContent =
+        `${b.userOpCount} UserOp · ${b.invokedCount} Invoked · ${b.royaltyAccruedCount} RoyaltyAccrued`;
+    }
+
+    // AA contracts grid — every identifier a clickable pharosscan link
+    const grid = document.getElementById("aa-grid");
+    if (grid) {
+      const items = [
+        { label: "handleOps tx", value: b.handleOpsTxHash, kind: "tx" },
+        { label: "EntryPoint v0.7 (canonical)", value: b.entryPoint, kind: "address" },
+        { label: "AccountFactory", value: b.factory, kind: "address" },
+        { label: "CascadeAccount (smart account · payer)", value: b.account, kind: "address" },
+        { label: "Cascade (verified)", value: data.network.cascade, kind: "address" }
+      ];
+      grid.innerHTML = "";
+      for (const it of items) {
+        const wrap = document.createElement("div");
+        wrap.className = "aa-item";
+        const dt = document.createElement("dt");
+        dt.textContent = it.label;
+        const dd = document.createElement("dd");
+        const a = document.createElement("a");
+        a.className = "aa-link";
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.href = expl + it.kind + "/" + it.value;
+        a.textContent = truncAddr(it.value) + " ↗";
+        a.title = it.value;
+        dd.appendChild(a);
+        wrap.appendChild(dt);
+        wrap.appendChild(dd);
+        grid.appendChild(wrap);
+      }
+    }
   }
 
   if (document.readyState === "loading") {
