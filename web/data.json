@@ -1,0 +1,76 @@
+{
+  "network": {
+    "name": "Pharos mainnet",
+    "chainId": 1672,
+    "token": "PROS",
+    "explorer": "https://www.pharosscan.xyz/",
+    "cascade": "0x31bE4C6B5711913D818e377ebd809d4397FF3c84"
+  },
+  "tree": [
+    {
+      "id": 3,
+      "label": "C",
+      "role": "invoked",
+      "creator": "0xECe4BBabd00c22E1baA1dE7f83E152D0eB6D12ef",
+      "depBps": 5000,
+      "depOn": 2,
+      "priceWei": "1000000000000000",
+      "deltaWei": "500000000000000",
+      "deltaPros": "0.0005",
+      "sharePct": 50
+    },
+    {
+      "id": 2,
+      "label": "B",
+      "role": "branch",
+      "creator": "0xD79F121Ac383e3e7f2aeEa6AEb3b700e2Fb6796b",
+      "depBps": 4000,
+      "depOn": 1,
+      "priceWei": "0",
+      "deltaWei": "300000000000000",
+      "deltaPros": "0.0003",
+      "sharePct": 30
+    },
+    {
+      "id": 1,
+      "label": "A",
+      "role": "leaf",
+      "creator": "0x7ca05d52EB17833E802B7D2eC7f1Fc23950c56b8",
+      "depBps": 0,
+      "depOn": null,
+      "priceWei": "0",
+      "deltaWei": "200000000000000",
+      "deltaPros": "0.0002",
+      "sharePct": 20
+    }
+  ],
+  "royaltyDemo": {
+    "invokeTxHash": "0x5ba20c8771787ff4bc4ea5c938fa32a394f4c1103318b7cfe0039f19dd3b1564",
+    "invokedSkillId": 3,
+    "payer": "0x3306E846b5Dc7F890436955999CeE27a6abbCbe8",
+    "priceWei": "1000000000000000",
+    "sumWei": "1000000000000000",
+    "sumPros": "0.001"
+  },
+  "batchDemo": {
+    "handleOpsTxHash": "0x1f3cec937acec167db716adf10be50bf135ac08f9ba3f02974cc0ee524375f90",
+    "entryPoint": "0x0000000071727De22E5E9d8BAf0edAc6f37da032",
+    "factory": "0x904935BA1417FC35591019A0fC54c670DA824c60",
+    "account": "0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1",
+    "owner": "0x3306E846b5Dc7F890436955999CeE27a6abbCbe8",
+    "batchedSkillIds": [2, 3],
+    "userOpCount": 1,
+    "invokedCount": 2,
+    "royaltyAccruedCount": 3,
+    "cumulative": {
+      "A": "0.0004",
+      "B": "0.0006",
+      "C": "0.001"
+    },
+    "cumulativeWei": {
+      "A": "400000000000000",
+      "B": "600000000000000",
+      "C": "1000000000000000"
+    }
+  }
+}

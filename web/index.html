@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cascade — recursive skill royalties, live on Pharos mainnet</title>
+  <meta name="description" content="One invoke pays every creator up the dependency tree. Real Pharos mainnet on-chain data, verifiable on pharosscan." />
+  <link rel="stylesheet" href="./styles.css" />
+  <!-- Committed snapshot of the REAL mainnet event data. app.js prefers fetch('./data.json')
+       and falls back to this inline block so the page also works from file:// (CORS-blocked fetch). -->
+  <script id="snapshot" type="application/json">
+{
+  "network": {
+    "name": "Pharos mainnet",
+    "chainId": 1672,
+    "token": "PROS",
+    "explorer": "https://www.pharosscan.xyz/",
+    "cascade": "0x31bE4C6B5711913D818e377ebd809d4397FF3c84"
+  },
+  "tree": [
+    { "id": 3, "label": "C", "role": "invoked", "creator": "0xECe4BBabd00c22E1baA1dE7f83E152D0eB6D12ef", "depBps": 5000, "depOn": 2, "priceWei": "1000000000000000", "deltaWei": "500000000000000", "deltaPros": "0.0005", "sharePct": 50 },
+    { "id": 2, "label": "B", "role": "branch", "creator": "0xD79F121Ac383e3e7f2aeEa6AEb3b700e2Fb6796b", "depBps": 4000, "depOn": 1, "priceWei": "0", "deltaWei": "300000000000000", "deltaPros": "0.0003", "sharePct": 30 },
+    { "id": 1, "label": "A", "role": "leaf", "creator": "0x7ca05d52EB17833E802B7D2eC7f1Fc23950c56b8", "depBps": 0, "depOn": null, "priceWei": "0", "deltaWei": "200000000000000", "deltaPros": "0.0002", "sharePct": 20 }
+  ],
+  "royaltyDemo": {
+    "invokeTxHash": "0x5ba20c8771787ff4bc4ea5c938fa32a394f4c1103318b7cfe0039f19dd3b1564",
+    "invokedSkillId": 3,
+    "payer": "0x3306E846b5Dc7F890436955999CeE27a6abbCbe8",
+    "priceWei": "1000000000000000",
+    "sumWei": "1000000000000000",
+    "sumPros": "0.001"
+  },
+  "batchDemo": {
+    "handleOpsTxHash": "0x1f3cec937acec167db716adf10be50bf135ac08f9ba3f02974cc0ee524375f90",
+    "entryPoint": "0x0000000071727De22E5E9d8BAf0edAc6f37da032",
+    "factory": "0x904935BA1417FC35591019A0fC54c670DA824c60",
+    "account": "0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1",
+    "owner": "0x3306E846b5Dc7F890436955999CeE27a6abbCbe8",
+    "batchedSkillIds": [2, 3],
+    "userOpCount": 1,
+    "invokedCount": 2,
+    "royaltyAccruedCount": 3,
+    "cumulative": { "A": "0.0004", "B": "0.0006", "C": "0.001" },
+    "cumulativeWei": { "A": "400000000000000", "B": "600000000000000", "C": "1000000000000000" }
+  }
+}
+  </script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">⟁</span>
+      <span class="brand-name">Cascade</span>
+      <span class="brand-net" id="net-badge">live on Pharos mainnet · chainId 1672</span>
+    </div>
+    <h1 class="headline">Recursive skill royalties, paid in <em>one</em> transaction.</h1>
+    <p class="subhead">
+      One <code>invoke</code> fans real PROS <strong>up</strong> the dependency tree —
+      every creator in the composition gets paid, proportional to depth. Below is the
+      <strong>actual</strong> on-chain event data from Pharos mainnet, replayed. Every hash links to pharosscan.
+    </p>
+  </header>
+
+  <nav class="demo-switch" aria-label="Demo selector">
+    <button class="switch-btn is-active" id="tab-royalty" data-view="royalty" aria-pressed="true">
+      <span class="switch-idx">01</span> Recursive royalty split
+    </button>
+    <button class="switch-btn" id="tab-batch" data-view="batch" aria-pressed="false">
+      <span class="switch-idx">02</span> ERC-4337 self-bundled batch
+    </button>
+  </nav>
+
+  <main>
+    <!-- ============ ROYALTY SPLIT (MAIN-02) ============ -->
+    <section class="demo-panel is-active" id="view-royalty" aria-labelledby="royalty-h">
+      <div class="panel-head">
+        <h2 id="royalty-h">A &rarr; B &rarr; C dependency tree</h2>
+        <p class="panel-sub">
+          One payer invokes skill <strong>C</strong> for <span class="mono">0.001 PROS</span>.
+          Watch the payment travel <strong>up</strong> the tree and split at each node.
+        </p>
+      </div>
+
+      <div class="stage-grid">
+        <div class="stage" id="stage-royalty" role="img"
+             aria-label="Dependency tree A to B to C with an animated payment flowing upward and splitting at each creator node">
+          <svg id="svg-royalty" class="tree-svg" viewBox="0 0 720 560" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+
+        <aside class="balances" aria-live="polite">
+          <h3 class="balances-title">Creator balances</h3>
+          <ul class="balance-list" id="balances-royalty"></ul>
+          <div class="sigma" id="sigma-royalty">
+            <span class="sigma-label">&Sigma; paid</span>
+            <span class="sigma-val mono" id="sigma-royalty-val">0.000000 PROS</span>
+          </div>
+          <p class="conservation">Conservation holds exactly: &Sigma; = PRICE<sub>C</sub> = 0.001 PROS. No dust, no leak.</p>
+          <div class="controls">
+            <button class="play-btn" id="play-royalty" type="button">
+              <span class="play-icon" aria-hidden="true">▶</span>
+              <span class="play-label">Play the split</span>
+            </button>
+          </div>
+          <a class="tx-proof mono" id="tx-royalty" target="_blank" rel="noopener" href="#">
+            invoke tx ↗ <span class="tx-short">0x5ba20c87…dd3b1564</span>
+          </a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ 4337 BATCH (MAIN-03) ============ -->
+    <section class="demo-panel" id="view-batch" aria-labelledby="batch-h" hidden>
+      <div class="panel-head">
+        <h2 id="batch-h">One UserOp. Two invokes. Same tree.</h2>
+        <p class="panel-sub">
+          A smart account self-bundles <strong>one</strong> <code>handleOps</code> through the real
+          EntryPoint v0.7, batching <strong>two</strong> <code>invoke</code> calls. Cumulative creator
+          balances rise across both runs.
+        </p>
+      </div>
+
+      <div class="stage-grid">
+        <div class="stage" id="stage-batch" role="img"
+             aria-label="A smart account self-bundling one handleOps that batches two invokes into the same A B C tree">
+          <svg id="svg-batch" class="tree-svg" viewBox="0 0 720 560" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+
+        <aside class="balances" aria-live="polite">
+          <h3 class="balances-title">Cumulative balances</h3>
+          <ul class="balance-list" id="balances-batch"></ul>
+          <div class="sigma" id="sigma-batch">
+            <span class="sigma-label">events</span>
+            <span class="sigma-val mono" id="sigma-batch-val">1 UserOp · 2 Invoked · 3 RoyaltyAccrued</span>
+          </div>
+          <p class="conservation">
+            <span class="mono" id="batch-account-line">payer = smart account 0xfe93…1Ef1</span><br />
+            one self-bundled UserOp · no external bundler · account-agnostic parity with the EOA path.
+          </p>
+          <div class="controls">
+            <button class="play-btn" id="play-batch" type="button">
+              <span class="play-icon" aria-hidden="true">▶</span>
+              <span class="play-label">Play the batch</span>
+            </button>
+          </div>
+          <a class="tx-proof mono" id="tx-batch" target="_blank" rel="noopener" href="#">
+            handleOps tx ↗ <span class="tx-short">0x1f3cec93…4375f90</span>
+          </a>
+        </aside>
+      </div>
+
+      <div class="aa-contracts">
+        <h3 class="aa-title">4337 contracts (live on mainnet)</h3>
+        <dl class="aa-grid" id="aa-grid"></dl>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-col">
+      <span class="footer-label">Cascade (verified source)</span>
+      <a class="mono" id="foot-cascade" target="_blank" rel="noopener"
+         href="https://www.pharosscan.xyz/address/0x31bE4C6B5711913D818e377ebd809d4397FF3c84">
+        0x31bE4C6B…97FF3c84 ↗
+      </a>
+    </div>
+    <div class="footer-col">
+      <span class="footer-label">Royalty invoke (MAIN-02)</span>
+      <a class="mono" id="foot-royalty" target="_blank" rel="noopener"
+         href="https://www.pharosscan.xyz/tx/0x5ba20c8771787ff4bc4ea5c938fa32a394f4c1103318b7cfe0039f19dd3b1564">
+        0x5ba20c87…dd3b1564 ↗
+      </a>
+    </div>
+    <div class="footer-col">
+      <span class="footer-label">4337 handleOps (MAIN-03)</span>
+      <a class="mono" id="foot-batch" target="_blank" rel="noopener"
+         href="https://www.pharosscan.xyz/tx/0x1f3cec937acec167db716adf10be50bf135ac08f9ba3f02974cc0ee524375f90">
+        0x1f3cec93…4375f90 ↗
+      </a>
+    </div>
+    <p class="footer-note">
+      All numbers replayed from real Pharos mainnet (chainId 1672) events. No mocked data. Verify any hash above on pharosscan.
+    </p>
+  </footer>
+</body>
+</html>
