@@ -56,7 +56,7 @@ Pharos network, off-chain agent scripts.
    the review was performed **inline to the same standard** (severity + `file:line` per
    finding, every class explicitly resolved) — this is disclosed for honesty.
 
-4. **Regression gate.** The full local suite (36 tests: unit + fuzz + invariant) is green;
+4. **Regression gate.** The full local suite (41 tests: unit + fuzz + invariant) is green;
    the Phase 3 fork test against the real EntryPoint remains green. No contract logic was
    changed by this review (no CRITICAL/HIGH to fix), so the frozen ABI is intact.
 
