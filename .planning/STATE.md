@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v0.7
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-06-08T00:06:47.814Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-06-08T00:13:58.738Z"
 last_activity: 2026-06-08
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 16
-  completed_plans: 14
+  completed_plans: 15
   percent: 83
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-07)
 ## Current Position
 
 Phase: 6 (Visualization, Docs & Submission) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-06-08
 
-Progress: [█████████░] 88%
+Progress: [█████████░] 94%
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Progress: [█████████░] 88%
 | Phase 05 P02 | 11 | 2 tasks | 1 files |
 | Phase 05 P03 | 16 | 2 tasks | 2 files |
 | Phase 06 P01 | 14 | 3 tasks | 4 files |
+| Phase 06 P02 | 14 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -104,6 +105,8 @@ Recent decisions affecting current work:
 - [Phase ?]: 05-03: live mainnet smart account batched 2 Cascade.invoke calls in ONE self-bundled handleOps via real EntryPoint v0.7 (tx 0x1f3cec93..); both creators rose, Sigma==PRICE_C; account-agnostic parity with EOA path proven with real money
 - [Phase ?]: 05-03: new mainnet-guarded LiveBundleMainnet.s.sol (chainId 1672) rather than weakening the frozen testnet LiveBundle.s.sol (688689 guard)
 - [Phase ?]: 05-03: first handleOps hit AA95 out-of-gas (forge undersized bundler tx vs EntryPoint 680k forwarded-gas floor); rolled back fully no half-spend, fixed via --gas-estimate-multiplier 500
+- [Phase ?]: Verified the 41-test claim by running forge test before documenting it (SECURITY.md said 36; authoritative count is 41 green)
+- [Phase ?]: Docs cite only on-chain-proven values from MAINNET_RESULT.md; SUBMISSION.md adds a pre-push secret-scan (threat T-06-04 mitigation)
 
 ### Pending Todos
 
@@ -124,6 +127,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-08T00:06:37.524Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-06-08T00:13:58.682Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None

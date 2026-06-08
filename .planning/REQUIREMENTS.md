@@ -48,7 +48,7 @@
 ### Demo — Visualization, Docs & Submission
 
 - [x] **DEMO-03**: Web visualization — dependency tree + animated money flowing up the tree, driven by real mainnet on-chain data
-- [ ] **DEMO-04**: README with setup/usage instructions
+- [x] **DEMO-04**: README with setup/usage instructions
 - [ ] **DEMO-05**: Demo video
 - [ ] **DEMO-06**: Submitted to DoraHacks (repo link + demo video)
 
@@ -95,7 +95,7 @@
 | MAIN-02 | Phase 5 | Complete |
 | MAIN-03 | Phase 5 | Complete |
 | DEMO-03 | Phase 6 | Complete |
-| DEMO-04 | Phase 6 | Pending |
+| DEMO-04 | Phase 6 | Complete |
 | DEMO-05 | Phase 6 | Pending |
 | DEMO-06 | Phase 6 | Pending |
 

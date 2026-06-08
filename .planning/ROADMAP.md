@@ -106,7 +106,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The repo link and demo video are submitted to DoraHacks before the deadline
 **Plans**: 3 plans
 - [x] 06-01-PLAN.md — WOW web visualization: A→B→C money-flow animated from real mainnet data, both demos, pharosscan links (DEMO-03)
-- [ ] 06-02-PLAN.md — README + docs/DEMO_VIDEO_SCRIPT.md + SUBMISSION.md materials (DEMO-04; DEMO-05/06 materials)
+- [x] 06-02-PLAN.md — README + docs/DEMO_VIDEO_SCRIPT.md + SUBMISSION.md materials (DEMO-04; DEMO-05/06 materials)
 - [ ] 06-03-PLAN.md — final human-verify checkpoint: record video, push + submit to DoraHacks, confirm pharosscan Verified checkmark (DEMO-05, DEMO-06)
 **UI hint**: yes
 
@@ -122,4 +122,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Smart-Account Agents (ERC-4337) | 3/3 | Complete   | 2026-06-07 |
 | 4. Contract Hardening & Security Review | 3/3 | Complete   | 2026-06-07 |
 | 5. Mainnet Deployment & Live Demos | 3/3 | Complete   | 2026-06-07 |
-| 6. Visualization, Docs & Submission | 1/3 | In Progress|  |
+| 6. Visualization, Docs & Submission | 2/3 | In Progress|  |
