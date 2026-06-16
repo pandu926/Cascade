@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <!-- Tree Expanded: Larger dependency tree (7 nodes) showing scalability.
+       Demonstrates: deeper composition = more creators paid automatically.
+       Used in Scene 3 "The Vision" to show Cascade handles real complexity. -->
+
+  <defs>
+    <linearGradient id="treeNodeStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2dd4bf"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="treeEdge" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#f0b90b" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0.3"/>
+    </linearGradient>
+    <filter id="treeGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="treeNodeFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(13,17,23,0.95)"/>
+      <stop offset="100%" stop-color="rgba(22,27,34,0.9)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- LEVEL 0 (bottom) — Invoked skill G (the "entry point") -->
+  <g class="tree-node level-0" filter="url(#treeGlow)">
+    <rect x="240" y="340" width="120" height="44" rx="6"
+          fill="url(#treeNodeFill)" stroke="url(#treeNodeStroke)" stroke-width="2"/>
+    <text x="300" y="358" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="10" font-weight="600" fill="#e2e8f0">SKILL G</text>
+    <text x="300" y="374" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="8" fill="#f0b90b">invoke here →</text>
+  </g>
+
+  <!-- LEVEL 1 — G depends on E and F -->
+  <g class="tree-node level-1" filter="url(#treeGlow)">
+    <rect x="140" y="260" width="100" height="40" rx="6"
+          fill="url(#treeNodeFill)" stroke="url(#treeNodeStroke)" stroke-width="1.5"/>
+    <text x="190" y="278" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="9" font-weight="600" fill="#e2e8f0">SKILL E</text>
+    <text x="190" y="292" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="7" fill="#94a3b8">40%</text>
+  </g>
+  <g class="tree-node level-1" filter="url(#treeGlow)">
+    <rect x="360" y="260" width="100" height="40" rx="6"
+          fill="url(#treeNodeFill)" stroke="url(#treeNodeStroke)" stroke-width="1.5"/>
+    <text x="410" y="278" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="9" font-weight="600" fill="#e2e8f0">SKILL F</text>
+    <text x="410" y="292" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="7" fill="#94a3b8">30%</text>
+  </g>
+
+  <!-- LEVEL 2 — E depends on B and C; F depends on D -->
+  <g class="tree-node level-2" filter="url(#treeGlow)">
+    <rect x="60" y="180" width="100" height="40" rx="6"
+          fill="url(#treeNodeFill)" stroke="url(#treeNodeStroke)" stroke-width="1.5"/>
+    <text x="110" y="198" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="9" font-weight="600" fill="#e2e8f0">SKILL B</text>
+    <text x="110" y="212" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="7" fill="#94a3b8">50%</text>
+  </g>
+  <g class="tree-node level-2" filter="url(#treeGlow)">
+    <rect x="200" y="180" width="100" height="40" rx="6"
+          fill="url(#treeNodeFill)" stroke="url(#treeNodeStroke)" stroke-width="1.5"/>
+    <text x="250" y="198" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="9" font-weight="600" fill="#e2e8f0">SKILL C</text>
+    <text x="250" y="212" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="7" fill="#94a3b8">30%</text>
+  </g>
+  <g class="tree-node level-2" filter="url(#treeGlow)">
+    <rect x="400" y="180" width="100" height="40" rx="6"
+          fill="url(#treeNodeFill)" stroke="url(#treeNodeStroke)" stroke-width="1.5"/>
+    <text x="450" y="198" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="9" font-weight="600" fill="#e2e8f0">SKILL D</text>
+    <text x="450" y="212" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="7" fill="#94a3b8">60%</text>
+  </g>
+
+  <!-- LEVEL 3 (top) — B depends on A (the deepest leaf) -->
+  <g class="tree-node level-3" filter="url(#treeGlow)">
+    <rect x="60" y="100" width="100" height="40" rx="6"
+          fill="url(#treeNodeFill)" stroke="url(#treeNodeStroke)" stroke-width="1.5"/>
+    <text x="110" y="118" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="9" font-weight="600" fill="#e2e8f0">SKILL A</text>
+    <text x="110" y="132" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+          font-size="7" fill="#94a3b8">leaf</text>
+  </g>
+
+  <!-- EDGES (payment flows UP: G→E/F→B/C/D→A) -->
+  <!-- G to E -->
+  <path d="M 270,340 Q 230,310 190,300" stroke="url(#treeEdge)" stroke-width="1.5"
+        fill="none" stroke-dasharray="6 4" opacity="0.6"/>
+  <!-- G to F -->
+  <path d="M 330,340 Q 370,310 410,300" stroke="url(#treeEdge)" stroke-width="1.5"
+        fill="none" stroke-dasharray="6 4" opacity="0.6"/>
+  <!-- E to B -->
+  <path d="M 170,260 Q 140,240 110,220" stroke="url(#treeEdge)" stroke-width="1.5"
+        fill="none" stroke-dasharray="6 4" opacity="0.6"/>
+  <!-- E to C -->
+  <path d="M 210,260 Q 230,240 250,220" stroke="url(#treeEdge)" stroke-width="1.5"
+        fill="none" stroke-dasharray="6 4" opacity="0.6"/>
+  <!-- F to D -->
+  <path d="M 410,260 Q 430,240 450,220" stroke="url(#treeEdge)" stroke-width="1.5"
+        fill="none" stroke-dasharray="6 4" opacity="0.6"/>
+  <!-- B to A -->
+  <path d="M 110,180 Q 110,160 110,140" stroke="url(#treeEdge)" stroke-width="1.5"
+        fill="none" stroke-dasharray="6 4" opacity="0.6"/>
+
+  <!-- Payment flow annotation -->
+  <text x="540" y="380" text-anchor="end" font-family="'JetBrains Mono', monospace"
+        font-size="8" fill="rgba(240,185,11,0.5)" letter-spacing="1">
+    ↑ PAYMENT FLOWS UP
+  </text>
+  <text x="540" y="110" text-anchor="end" font-family="'JetBrains Mono', monospace"
+        font-size="8" fill="rgba(45,212,191,0.5)" letter-spacing="1">
+    DEEPEST CREATORS
+  </text>
+</svg>

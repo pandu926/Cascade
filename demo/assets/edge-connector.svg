@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" fill="none">
+  <!-- Edge Connector: Curved bezier path between two skill nodes.
+       Stroke-dashoffset animatable for "flow" effect (payment traveling up).
+       Oriented vertically (bottom→top = payment direction). -->
+
+  <defs>
+    <linearGradient id="edgeGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#f0b90b" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#2dd4bf" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.4"/>
+    </linearGradient>
+    <filter id="edgeGlow" x="-20%" y="-5%" width="140%" height="110%">
+      <feGaussianBlur stdDeviation="2" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background path (always visible, subtle) -->
+  <path class="edge-bg"
+        d="M 50,190 C 50,150 50,130 50,100 C 50,70 50,50 50,10"
+        stroke="rgba(45,212,191,0.15)" stroke-width="2" fill="none"
+        stroke-linecap="round"/>
+
+  <!-- Animated flow path (stroke-dashoffset driven by GSAP) -->
+  <path class="edge-flow"
+        d="M 50,190 C 50,150 50,130 50,100 C 50,70 50,50 50,10"
+        stroke="url(#edgeGrad)" stroke-width="2.5" fill="none"
+        stroke-linecap="round" stroke-dasharray="12 8"
+        filter="url(#edgeGlow)"/>
+
+  <!-- Direction indicator (small arrow at top) -->
+  <polygon points="44,14 50,4 56,14" fill="#2dd4bf" opacity="0.7"/>
+</svg>

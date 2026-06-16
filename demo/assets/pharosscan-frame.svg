@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" fill="none">
+  <!-- PharosScan Frame: Simplified explorer UI frame for split-screen proof.
+       Shows: header bar, tx status badge, event logs area, address links.
+       Content is placeholder — actual values injected via GSAP/DOM at runtime. -->
+
+  <defs>
+    <linearGradient id="frameHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f1419"/>
+      <stop offset="100%" stop-color="#1a2332"/>
+    </linearGradient>
+    <filter id="frameShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Outer frame (browser-like window) -->
+  <rect x="2" y="2" width="476" height="316" rx="8"
+        fill="#0d1117" stroke="#30363d" stroke-width="1.5" filter="url(#frameShadow)"/>
+
+  <!-- Title bar -->
+  <rect x="2" y="2" width="476" height="36" rx="8" fill="url(#frameHeader)"/>
+  <rect x="2" y="30" width="476" height="8" fill="url(#frameHeader)"/>
+
+  <!-- Window dots -->
+  <circle cx="18" cy="20" r="5" fill="#ff5f57"/>
+  <circle cx="36" cy="20" r="5" fill="#febc2e"/>
+  <circle cx="54" cy="20" r="5" fill="#28c840"/>
+
+  <!-- URL bar -->
+  <rect x="72" y="10" width="340" height="20" rx="4" fill="#161b22"/>
+  <text class="url-text" x="82" y="24" font-family="'JetBrains Mono', monospace"
+        font-size="9" fill="#8b949e">
+    pharosscan.xyz/tx/0x5ba20c87...
+  </text>
+
+  <!-- Content area: Transaction header -->
+  <text class="tx-title" x="20" y="62" font-family="'Inter', sans-serif"
+        font-size="12" font-weight="600" fill="#e6edf3">
+    Transaction Details
+  </text>
+
+  <!-- Status badge -->
+  <rect class="status-badge" x="20" y="70" width="70" height="22" rx="4" fill="#0d3321"/>
+  <text x="32" y="85" font-family="'JetBrains Mono', monospace"
+        font-size="10" font-weight="600" fill="#3fb950">
+    ✓ Success
+  </text>
+
+  <!-- Tx hash row -->
+  <text x="20" y="112" font-family="'JetBrains Mono', monospace"
+        font-size="9" fill="#8b949e">Tx Hash:</text>
+  <text class="tx-hash" x="80" y="112" font-family="'JetBrains Mono', monospace"
+        font-size="9" fill="#58a6ff">
+    0x5ba20c8771787ff4bc4ea5c938fa32a394f4c1103318b7cfe0039f19dd3b1564
+  </text>
+
+  <!-- Events section header -->
+  <text x="20" y="142" font-family="'Inter', sans-serif"
+        font-size="11" font-weight="600" fill="#e6edf3">
+    Events (4)
+  </text>
+  <line x1="20" y1="148" x2="460" y2="148" stroke="#30363d" stroke-width="0.8"/>
+
+  <!-- Event rows (RoyaltyAccrued × 3 + Invoked × 1) -->
+  <g class="event-row-1">
+    <rect x="20" y="155" width="440" height="28" rx="3" fill="#161b22"/>
+    <text x="30" y="173" font-family="'JetBrains Mono', monospace" font-size="9" fill="#f0b90b">RoyaltyAccrued</text>
+    <text x="150" y="173" font-family="'JetBrains Mono', monospace" font-size="9" fill="#8b949e">creator: 0x7ca0...56b8</text>
+    <text x="360" y="173" font-family="'JetBrains Mono', monospace" font-size="9" fill="#3fb950">+0.0002 PROS</text>
+  </g>
+
+  <g class="event-row-2">
+    <rect x="20" y="188" width="440" height="28" rx="3" fill="#161b22"/>
+    <text x="30" y="206" font-family="'JetBrains Mono', monospace" font-size="9" fill="#f0b90b">RoyaltyAccrued</text>
+    <text x="150" y="206" font-family="'JetBrains Mono', monospace" font-size="9" fill="#8b949e">creator: 0xD79F...796b</text>
+    <text x="360" y="206" font-family="'JetBrains Mono', monospace" font-size="9" fill="#3fb950">+0.0003 PROS</text>
+  </g>
+
+  <g class="event-row-3">
+    <rect x="20" y="221" width="440" height="28" rx="3" fill="#161b22"/>
+    <text x="30" y="239" font-family="'JetBrains Mono', monospace" font-size="9" fill="#f0b90b">RoyaltyAccrued</text>
+    <text x="150" y="239" font-family="'JetBrains Mono', monospace" font-size="9" fill="#8b949e">creator: 0xECe4...12ef</text>
+    <text x="360" y="239" font-family="'JetBrains Mono', monospace" font-size="9" fill="#3fb950">+0.0005 PROS</text>
+  </g>
+
+  <g class="event-row-4">
+    <rect x="20" y="254" width="440" height="28" rx="3" fill="#161b22"/>
+    <text x="30" y="272" font-family="'JetBrains Mono', monospace" font-size="9" fill="#58a6ff">Invoked</text>
+    <text x="150" y="272" font-family="'JetBrains Mono', monospace" font-size="9" fill="#8b949e">skillId: 3, payer: 0x3306...Cbe8</text>
+    <text x="360" y="272" font-family="'JetBrains Mono', monospace" font-size="9" fill="#e6edf3">0.001 PROS</text>
+  </g>
+
+  <!-- Footer: conservation proof -->
+  <line x1="20" y1="290" x2="460" y2="290" stroke="#30363d" stroke-width="0.8"/>
+  <text class="conservation" x="20" y="308" font-family="'JetBrains Mono', monospace"
+        font-size="10" font-weight="600" fill="#2dd4bf">
+    Σ = 0.0002 + 0.0003 + 0.0005 = 0.001 PROS ✓ (conservation exact)
+  </text>
+</svg>

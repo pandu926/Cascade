@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- AI Agent Icon: Abstract geometric brain/circuit representation.
+       Represents the autonomous on-chain actor that invokes skills.
+       Style: circuit-board meets neural network, geometric, monoline. -->
+
+  <defs>
+    <linearGradient id="agentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="agentPulse" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+    <filter id="agentGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer circuit ring -->
+  <circle cx="60" cy="60" r="48" stroke="url(#agentGrad)" stroke-width="1.5" fill="none"
+          stroke-dasharray="8 4" opacity="0.5"/>
+
+  <!-- Inner hexagonal frame (the "brain housing") -->
+  <polygon points="60,16 95,34 95,70 60,88 25,70 25,34"
+           stroke="url(#agentGrad)" stroke-width="2" fill="rgba(139,92,246,0.05)"
+           filter="url(#agentGlow)"/>
+
+  <!-- Neural nodes (circuit intersections) -->
+  <circle cx="60" cy="34" r="4" fill="url(#agentPulse)"/>
+  <circle cx="42" cy="46" r="3" fill="url(#agentPulse)" opacity="0.8"/>
+  <circle cx="78" cy="46" r="3" fill="url(#agentPulse)" opacity="0.8"/>
+  <circle cx="60" cy="56" r="5" fill="url(#agentPulse)"/>
+  <circle cx="48" cy="68" r="3" fill="url(#agentPulse)" opacity="0.7"/>
+  <circle cx="72" cy="68" r="3" fill="url(#agentPulse)" opacity="0.7"/>
+  <circle cx="60" cy="78" r="3.5" fill="url(#agentPulse)" opacity="0.6"/>
+
+  <!-- Neural connections (circuit traces) -->
+  <line x1="60" y1="34" x2="42" y2="46" stroke="#a78bfa" stroke-width="1" opacity="0.6"/>
+  <line x1="60" y1="34" x2="78" y2="46" stroke="#a78bfa" stroke-width="1" opacity="0.6"/>
+  <line x1="42" y1="46" x2="60" y2="56" stroke="#a78bfa" stroke-width="1" opacity="0.7"/>
+  <line x1="78" y1="46" x2="60" y2="56" stroke="#a78bfa" stroke-width="1" opacity="0.7"/>
+  <line x1="60" y1="56" x2="48" y2="68" stroke="#a78bfa" stroke-width="1" opacity="0.5"/>
+  <line x1="60" y1="56" x2="72" y2="68" stroke="#a78bfa" stroke-width="1" opacity="0.5"/>
+  <line x1="48" y1="68" x2="60" y2="78" stroke="#a78bfa" stroke-width="1" opacity="0.4"/>
+  <line x1="72" y1="68" x2="60" y2="78" stroke="#a78bfa" stroke-width="1" opacity="0.4"/>
+
+  <!-- Central "eye" (agent awareness indicator) -->
+  <circle cx="60" cy="56" r="2" fill="#fff" opacity="0.9"/>
+
+  <!-- Output connector (bottom — where the agent sends invoke tx) -->
+  <line x1="60" y1="88" x2="60" y2="104" stroke="#6366f1" stroke-width="1.5"
+        stroke-dasharray="3 2" opacity="0.6"/>
+  <polygon points="55,102 60,112 65,102" fill="#6366f1" opacity="0.7"/>
+
+  <!-- Label -->
+  <text x="60" y="118" text-anchor="middle"
+        font-family="'JetBrains Mono', monospace" font-size="8"
+        fill="#a78bfa" letter-spacing="1.5" opacity="0.8">
+    AGENT
+  </text>
+</svg>

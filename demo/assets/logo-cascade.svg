@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Cascade Logo: Abstract cascading/waterfall of connected nodes
+       Three hexagonal nodes descending diagonally, connected by flowing lines.
+       Represents: skill composition flowing DOWN, payment flowing UP -->
+
+  <!-- Glow filter for the active state -->
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0b90b"/>
+      <stop offset="100%" stop-color="#ff6b35"/>
+    </linearGradient>
+    <filter id="logoGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Top node (A — leaf/deepest creator) -->
+  <g class="node-a" filter="url(#logoGlow)">
+    <polygon points="60,30 78,20 96,30 96,50 78,60 60,50"
+             stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+    <circle cx="78" cy="40" r="4" fill="#f0b90b" opacity="0.8"/>
+  </g>
+
+  <!-- Middle node (B — mid-level creator) -->
+  <g class="node-b" filter="url(#logoGlow)">
+    <polygon points="85,80 103,70 121,80 121,100 103,110 85,100"
+             stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+    <circle cx="103" cy="90" r="4" fill="#f0b90b" opacity="0.8"/>
+  </g>
+
+  <!-- Bottom node (C — invoked/top skill) -->
+  <g class="node-c" filter="url(#logoGlow)">
+    <polygon points="110,130 128,120 146,130 146,150 128,160 110,150"
+             stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+    <circle cx="128" cy="140" r="5" fill="#f0b90b" opacity="1"/>
+  </g>
+
+  <!-- Flow lines connecting nodes (payment flows UP: C→B→A) -->
+  <path class="flow-up" d="M 128,120 Q 115,105 103,110"
+        stroke="#f0b90b" stroke-width="1.5" fill="none"
+        stroke-dasharray="4 3" opacity="0.6"/>
+  <path class="flow-up" d="M 103,70 Q 90,55 78,60"
+        stroke="#f0b90b" stroke-width="1.5" fill="none"
+        stroke-dasharray="4 3" opacity="0.6"/>
+
+  <!-- Entry arrow (invoke enters at C) -->
+  <path class="invoke-entry" d="M 145,175 Q 140,165 128,160"
+        stroke="#ff6b35" stroke-width="2" fill="none"
+        marker-end="none" opacity="0.5"/>
+  <circle cx="148" cy="178" r="3" fill="#ff6b35" opacity="0.7"/>
+
+  <!-- Text: CASCADE -->
+  <text x="30" y="192" font-family="'JetBrains Mono', 'Fira Code', monospace"
+        font-size="18" font-weight="700" fill="url(#logoGrad)" letter-spacing="4">
+    CASCADE
+  </text>
+</svg>

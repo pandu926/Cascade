@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <!-- Checkmark Verified: Animated stroke-draw verification badge.
+       The checkmark path draws itself via stroke-dashoffset (GSAP).
+       The circle fills with a subtle pulse after check completes. -->
+
+  <defs>
+    <linearGradient id="checkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="checkGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle (shield shape) -->
+  <circle class="verify-ring" cx="40" cy="40" r="34"
+          fill="rgba(16,185,129,0.08)" stroke="url(#checkGrad)" stroke-width="2.5"
+          filter="url(#checkGlow)"/>
+
+  <!-- Inner subtle ring -->
+  <circle cx="40" cy="40" r="27" fill="none" stroke="rgba(16,185,129,0.2)" stroke-width="1"/>
+
+  <!-- Checkmark path (stroke-dasharray = total length for draw animation) -->
+  <path class="check-path"
+        d="M 24,42 L 34,52 L 56,28"
+        stroke="url(#checkGrad)" stroke-width="4.5" fill="none"
+        stroke-linecap="round" stroke-linejoin="round"
+        stroke-dasharray="60" stroke-dashoffset="60"/>
+
+  <!-- "VERIFIED" label below -->
+  <text class="verify-label" x="40" y="72" text-anchor="middle"
+        font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700"
+        fill="#10b981" letter-spacing="2" opacity="0">
+    VERIFIED
+  </text>
+</svg>

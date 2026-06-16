@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none">
+  <!-- Payment Particle: Golden orb with radial glow + trail tail.
+       Animated along MotionPath (C→B→A) during the invoke sequence.
+       Splits into smaller particles at each node. -->
+
+  <defs>
+    <radialGradient id="particleCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff7cc"/>
+      <stop offset="40%" stop-color="#f0b90b"/>
+      <stop offset="100%" stop-color="#cc8800" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="particleGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f0b90b" stop-opacity="0.6"/>
+      <stop offset="60%" stop-color="#f0b90b" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#f0b90b" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="particleBlur" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <filter id="particleSoft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+  </defs>
+
+  <!-- Outer glow (large, soft) -->
+  <circle cx="30" cy="30" r="25" fill="url(#particleGlow)" filter="url(#particleBlur)"/>
+
+  <!-- Mid glow (medium ring) -->
+  <circle cx="30" cy="30" r="14" fill="url(#particleGlow)" filter="url(#particleSoft)"/>
+
+  <!-- Core orb (bright center) -->
+  <circle cx="30" cy="30" r="8" fill="url(#particleCore)"/>
+
+  <!-- Hot center dot -->
+  <circle cx="30" cy="30" r="3" fill="#fffde6" opacity="0.95"/>
+
+  <!-- Trail tail (will be stretched via scaleY in animation) -->
+  <ellipse class="trail" cx="30" cy="44" rx="4" ry="10"
+           fill="url(#particleGlow)" opacity="0.4"/>
+</svg>

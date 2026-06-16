@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <!-- PROS Coin: Native token of Pharos network.
+       Used in payment flow animations. Gold/bronze metallic look. -->
+
+  <defs>
+    <radialGradient id="coinFace" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#ffd700"/>
+      <stop offset="50%" stop-color="#f0b90b"/>
+      <stop offset="85%" stop-color="#b8860b"/>
+      <stop offset="100%" stop-color="#8b6914"/>
+    </radialGradient>
+    <linearGradient id="coinEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#daa520"/>
+      <stop offset="50%" stop-color="#8b6914"/>
+      <stop offset="100%" stop-color="#daa520"/>
+    </linearGradient>
+    <filter id="coinShadow" x="-20%" y="-10%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="coinShine" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="1" result="shine"/>
+      <feMerge>
+        <feMergeNode in="shine"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Coin edge (3D depth illusion) -->
+  <ellipse cx="40" cy="43" rx="28" ry="30" fill="url(#coinEdge)" filter="url(#coinShadow)"/>
+
+  <!-- Coin face -->
+  <circle cx="40" cy="40" r="28" fill="url(#coinFace)"/>
+
+  <!-- Inner ring -->
+  <circle cx="40" cy="40" r="22" fill="none" stroke="#daa520" stroke-width="1.2" opacity="0.6"/>
+
+  <!-- PROS text -->
+  <text x="40" y="37" text-anchor="middle"
+        font-family="'Inter', 'Helvetica', sans-serif" font-size="11" font-weight="800"
+        fill="#4a2c00" letter-spacing="1">
+    PROS
+  </text>
+
+  <!-- Value below -->
+  <text x="40" y="50" text-anchor="middle"
+        font-family="'JetBrains Mono', monospace" font-size="8" font-weight="600"
+        fill="#5c3d00" opacity="0.8">
+    PHAROS
+  </text>
+
+  <!-- Highlight arc (metallic shine) -->
+  <path d="M 22,28 A 22,22 0 0 1 52,22" stroke="#fff" stroke-width="1.5"
+        fill="none" opacity="0.3" stroke-linecap="round" filter="url(#coinShine)"/>
+</svg>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Cascade — Demo Video</title>
+  <link rel="stylesheet" href="video.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="canvas" class="canvas">
+
+    <!-- Background layer -->
+    <div class="layer bg-layer">
+      <div class="bg-grid"></div>
+      <div class="noise-overlay"></div>
+    </div>
+
+    <!-- ==================== SCENE 1: THE HOOK ==================== -->
+    <div class="layer scene scene-1" id="scene1">
+
+      <!-- Logo (center, then shrinks to top-left) -->
+      <div class="logo" id="logo">
+        <svg class="logo-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f0b90b"/><stop offset="100%" stop-color="#ff6b35"/>
+            </linearGradient>
+            <filter id="logoGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <g class="logo-node logo-node-a" filter="url(#logoGlow)">
+            <polygon points="60,30 78,20 96,30 96,50 78,60 60,50" stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+            <circle cx="78" cy="40" r="4" fill="#f0b90b" opacity="0.8"/>
+          </g>
+          <g class="logo-node logo-node-b" filter="url(#logoGlow)">
+            <polygon points="85,80 103,70 121,80 121,100 103,110 85,100" stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+            <circle cx="103" cy="90" r="4" fill="#f0b90b" opacity="0.8"/>
+          </g>
+          <g class="logo-node logo-node-c" filter="url(#logoGlow)">
+            <polygon points="110,130 128,120 146,130 146,150 128,160 110,150" stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+            <circle cx="128" cy="140" r="5" fill="#f0b90b"/>
+          </g>
+          <path class="logo-flow" d="M128,120 Q115,105 103,110" stroke="#f0b90b" stroke-width="1.5" fill="none" stroke-dasharray="4 3" opacity="0.6"/>
+          <path class="logo-flow" d="M103,70 Q90,55 78,60" stroke="#f0b90b" stroke-width="1.5" fill="none" stroke-dasharray="4 3" opacity="0.6"/>
+        </svg>
+        <h1 class="logo-text" id="logoText">CASCADE</h1>
+        <p class="logo-sub" id="logoSub">Recursive Skill Royalties on Pharos</p>
+      </div>
+
+      <!-- Skill Tree (A→B→C) -->
+      <div class="tree" id="tree">
+        <!-- Node C (bottom — invoked) -->
+        <div class="tree-node node-c" id="nodeC" data-label="SKILL C" data-share="invoked" data-addr="0xECe4...12ef">
+          <div class="node-inner">
+            <span class="node-label">SKILL C</span>
+            <span class="node-role">top · price 0.001</span>
+            <span class="node-balance" id="balC">0.0000</span>
+            <span class="node-unit">PROS</span>
+          </div>
+        </div>
+        <!-- Node B (mid) -->
+        <div class="tree-node node-b" id="nodeB" data-label="SKILL B" data-share="50%" data-addr="0xD79F...796b">
+          <div class="node-inner">
+            <span class="node-label">SKILL B</span>
+            <span class="node-role">dep of C · 50%</span>
+            <span class="node-balance" id="balB">0.0000</span>
+            <span class="node-unit">PROS</span>
+          </div>
+        </div>
+        <!-- Node A (top — deepest leaf) -->
+        <div class="tree-node node-a" id="nodeA" data-label="SKILL A" data-share="40%" data-addr="0x7ca0...56b8">
+          <div class="node-inner">
+            <span class="node-label">SKILL A</span>
+            <span class="node-role">leaf · 40% of B</span>
+            <span class="node-balance" id="balA">0.0000</span>
+            <span class="node-unit">PROS</span>
+          </div>
+        </div>
+
+        <!-- Edges (SVG overlay for bezier paths) -->
+        <svg class="tree-edges" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="edgeGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stop-color="#f0b90b" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0.4"/>
+            </linearGradient>
+          </defs>
+          <!-- C to B -->
+          <path id="edgeCB" class="edge" d="M 960,680 C 960,620 960,580 960,520" stroke="url(#edgeGrad)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- B to A -->
+          <path id="edgeBA" class="edge" d="M 960,440 C 960,380 960,340 960,280" stroke="url(#edgeGrad)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- Share labels on edges -->
+          <text class="edge-label" x="985" y="600" fill="#94a3b8" font-size="14" font-family="JetBrains Mono">50% ↑</text>
+          <text class="edge-label" x="985" y="360" fill="#94a3b8" font-size="14" font-family="JetBrains Mono">40% ↑</text>
+        </svg>
+
+        <!-- Particle (animated gold orb) -->
+        <div class="particle" id="particle"></div>
+        <div class="particle particle-split" id="particleSplit"></div>
+      </div>
+
+      <!-- Conservation text -->
+      <div class="conservation" id="conservation">
+        <span class="cons-sum">Σ = 0.0002 + 0.0003 + 0.0005 = </span>
+        <span class="cons-total">0.001 PROS</span>
+        <span class="cons-check"> ✓</span>
+      </div>
+    </div>
+
+    <!-- ==================== SCENE 2: THE PROOF ==================== -->
+    <div class="layer scene scene-2" id="scene2">
+      <div class="proof-left" id="proofLeft">
+        <!-- Mini tree (reused from scene 1, scaled) -->
+      </div>
+      <div class="proof-right" id="proofRight">
+        <div class="explorer-frame">
+          <div class="explorer-titlebar">
+            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+            <div class="explorer-url" id="explorerUrl"></div>
+          </div>
+          <div class="explorer-content">
+            <h3 class="explorer-title">Transaction Details</h3>
+            <div class="status-badge" id="statusBadge">✓ Success</div>
+            <div class="tx-row" id="txHash">
+              <span class="tx-label">Tx Hash:</span>
+              <span class="tx-value" id="txHashValue"></span>
+            </div>
+            <h4 class="events-title">Events (4)</h4>
+            <div class="event-row" id="evRow1"><span class="ev-name gold">RoyaltyAccrued</span><span class="ev-detail">creator: 0x7ca0...56b8</span><span class="ev-amount green">+0.0002 PROS</span></div>
+            <div class="event-row" id="evRow2"><span class="ev-name gold">RoyaltyAccrued</span><span class="ev-detail">creator: 0xD79F...796b</span><span class="ev-amount green">+0.0003 PROS</span></div>
+            <div class="event-row" id="evRow3"><span class="ev-name gold">RoyaltyAccrued</span><span class="ev-detail">creator: 0xECe4...12ef</span><span class="ev-amount green">+0.0005 PROS</span></div>
+            <div class="event-row" id="evRow4"><span class="ev-name blue">Invoked</span><span class="ev-detail">skillId: 3, payer: 0x3306...Cbe8</span><span class="ev-amount white">0.001 PROS</span></div>
+            <div class="conservation-line" id="consLine">Σ = 0.0002 + 0.0003 + 0.0005 = 0.001 PROS ✓</div>
+          </div>
+        </div>
+        <!-- Verified badge -->
+        <div class="verified-badge" id="verifiedBadge">
+          <svg class="verified-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+            <circle class="verify-ring" cx="40" cy="40" r="34" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="2.5"/>
+            <path class="check-path" d="M24,42 L34,52 L56,28" stroke="#10b981" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60"/>
+          </svg>
+          <span class="verified-text" id="verifiedText">VERIFIED ON MAINNET</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SCENE 3: THE VISION ==================== -->
+    <div class="layer scene scene-3" id="scene3">
+      <div class="vision-tree" id="visionTree">
+        <!-- 7-node expanded tree rendered inline -->
+        <svg class="expanded-svg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+          <!-- Reuse tree-expanded.svg content (simplified for inline) -->
+          <defs>
+            <linearGradient id="vNodeStroke" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2dd4bf"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
+          </defs>
+          <g class="v-node vn-g"><rect x="240" y="340" width="120" height="44" rx="6" fill="#0d1117" stroke="url(#vNodeStroke)" stroke-width="2"/><text x="300" y="366" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#e2e8f0">SKILL G</text></g>
+          <g class="v-node vn-e"><rect x="130" y="260" width="100" height="40" rx="6" fill="#0d1117" stroke="url(#vNodeStroke)" stroke-width="1.5"/><text x="180" y="284" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#e2e8f0">SKILL E</text></g>
+          <g class="v-node vn-f"><rect x="370" y="260" width="100" height="40" rx="6" fill="#0d1117" stroke="url(#vNodeStroke)" stroke-width="1.5"/><text x="420" y="284" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#e2e8f0">SKILL F</text></g>
+          <g class="v-node vn-b"><rect x="60" y="180" width="100" height="40" rx="6" fill="#0d1117" stroke="url(#vNodeStroke)" stroke-width="1.5"/><text x="110" y="204" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#e2e8f0">SKILL B</text></g>
+          <g class="v-node vn-c"><rect x="200" y="180" width="100" height="40" rx="6" fill="#0d1117" stroke="url(#vNodeStroke)" stroke-width="1.5"/><text x="250" y="204" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#e2e8f0">SKILL C</text></g>
+          <g class="v-node vn-d"><rect x="400" y="180" width="100" height="40" rx="6" fill="#0d1117" stroke="url(#vNodeStroke)" stroke-width="1.5"/><text x="450" y="204" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#e2e8f0">SKILL D</text></g>
+          <g class="v-node vn-a"><rect x="60" y="100" width="100" height="40" rx="6" fill="#0d1117" stroke="url(#vNodeStroke)" stroke-width="1.5"/><text x="110" y="124" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#e2e8f0">SKILL A</text></g>
+          <!-- Edges -->
+          <path class="v-edge" d="M270,340 Q220,310 180,300" stroke="#f0b90b" stroke-width="1.5" fill="none" opacity="0.5" stroke-dasharray="6 4"/>
+          <path class="v-edge" d="M330,340 Q380,310 420,300" stroke="#f0b90b" stroke-width="1.5" fill="none" opacity="0.5" stroke-dasharray="6 4"/>
+          <path class="v-edge" d="M160,260 Q135,240 110,220" stroke="#f0b90b" stroke-width="1.5" fill="none" opacity="0.5" stroke-dasharray="6 4"/>
+          <path class="v-edge" d="M200,260 Q225,240 250,220" stroke="#f0b90b" stroke-width="1.5" fill="none" opacity="0.5" stroke-dasharray="6 4"/>
+          <path class="v-edge" d="M420,260 Q435,240 450,220" stroke="#f0b90b" stroke-width="1.5" fill="none" opacity="0.5" stroke-dasharray="6 4"/>
+          <path class="v-edge" d="M110,180 Q110,160 110,140" stroke="#f0b90b" stroke-width="1.5" fill="none" opacity="0.5" stroke-dasharray="6 4"/>
+        </svg>
+      </div>
+
+      <!-- Agent icons -->
+      <div class="agent agent-1" id="agent1"></div>
+      <div class="agent agent-2" id="agent2"></div>
+      <div class="agent agent-3" id="agent3"></div>
+
+      <!-- Vision text overlay -->
+      <div class="vision-text" id="visionText">
+        <p class="vision-sub" id="visionSub">WHAT COMES NEXT</p>
+        <h2 class="vision-headline" id="visionHeadline">Phase 2: Agents Compose Skills</h2>
+        <p class="vision-desc" id="visionDesc">Autonomous agents discover, invoke, and pay for skills —</p>
+        <p class="vision-desc2" id="visionDesc2">with built-in economic incentives at every layer.</p>
+      </div>
+
+      <!-- Pharos badge -->
+      <div class="pharos-badge" id="pharosBadge">
+        <span class="badge-dot"></span>
+        <span class="badge-label">DEPLOYED & VERIFIED</span>
+        <span class="badge-title">Live on Pharos Mainnet</span>
+        <span class="badge-chain">1672</span>
+      </div>
+    </div>
+
+    <!-- ==================== UI CONTROLS ==================== -->
+    <div class="controls">
+      <button class="btn-play" id="btnPlay">▶ PLAY</button>
+      <button class="btn-replay" id="btnReplay" style="display:none">↺ REPLAY</button>
+      <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
+  </div>
+
+  <!-- GSAP CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/MotionPathPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/TextPlugin.min.js"></script>
+  <script src="video.js"></script>
+</body>
+</html>

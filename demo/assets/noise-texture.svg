@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Noise Texture: SVG feTurbulence-based grain overlay.
+       Applied as a full-screen overlay with low opacity for atmosphere.
+       Gives the "film grain / analog" texture without a raster image. -->
+
+  <defs>
+    <filter id="noiseFilter" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85"
+                    numOctaves="4" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
+      <feBlend in="SourceGraphic" in2="gray" mode="overlay"/>
+    </filter>
+  </defs>
+
+  <!-- The noise rect — overlay this on the page with opacity 0.03-0.06 -->
+  <rect width="200" height="200" fill="transparent" filter="url(#noiseFilter)" opacity="0.04"/>
+</svg>

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" fill="none">
+  <!-- Skill Node: A hexagonal container representing one skill in the tree.
+       Has: label area (top), balance display (bottom), status indicator (dot).
+       Designed to be instanced 3x for A, B, C nodes in the demo. -->
+
+  <defs>
+    <linearGradient id="nodeStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2dd4bf"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="nodeFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(13,17,23,0.95)"/>
+      <stop offset="100%" stop-color="rgba(22,27,34,0.9)"/>
+    </linearGradient>
+    <filter id="nodeGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="innerShadow">
+      <feOffset dx="0" dy="1"/>
+      <feGaussianBlur stdDeviation="1" result="shadow"/>
+      <feComposite in="SourceGraphic" in2="shadow" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Main hexagonal shape -->
+  <polygon points="20,60 50,10 190,10 220,60 190,110 50,110"
+           fill="url(#nodeFill)" stroke="url(#nodeStroke)" stroke-width="1.8"
+           filter="url(#nodeGlow)"/>
+
+  <!-- Inner border (subtle depth) -->
+  <polygon points="26,60 53,16 187,16 214,60 187,104 53,104"
+           fill="none" stroke="rgba(45,212,191,0.15)" stroke-width="0.8"/>
+
+  <!-- Status indicator dot (top-left) -->
+  <circle class="status-dot" cx="58" cy="28" r="4" fill="#10b981"/>
+
+  <!-- Skill label placeholder -->
+  <text class="skill-label" x="120" y="42" text-anchor="middle"
+        font-family="'JetBrains Mono', monospace" font-size="13" font-weight="600"
+        fill="#e2e8f0" letter-spacing="1">
+    SKILL C
+  </text>
+
+  <!-- Separator line -->
+  <line x1="65" y1="54" x2="175" y2="54" stroke="rgba(45,212,191,0.3)" stroke-width="0.8"/>
+
+  <!-- Balance label -->
+  <text class="balance-label" x="120" y="72" text-anchor="middle"
+        font-family="'JetBrains Mono', monospace" font-size="10"
+        fill="#94a3b8" letter-spacing="0.5">
+    accrued balance
+  </text>
+
+  <!-- Balance value (animated by GSAP) -->
+  <text class="balance-value" x="120" y="92" text-anchor="middle"
+        font-family="'JetBrains Mono', monospace" font-size="16" font-weight="700"
+        fill="#f0b90b" letter-spacing="0.5">
+    0.0000 PROS
+  </text>
+
+  <!-- Share indicator (bottom-right) -->
+  <text class="share-pct" x="185" y="100" text-anchor="end"
+        font-family="'JetBrains Mono', monospace" font-size="9"
+        fill="rgba(45,212,191,0.6)">
+    50% →
+  </text>
+</svg>

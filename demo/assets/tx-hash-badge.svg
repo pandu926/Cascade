@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 48" fill="none">
+  <!-- Tx Hash Badge: Compact transaction identifier with status chip.
+       Shows truncated hash + clickable pharosscan link indicator.
+       Typewriter-animated via GSAP (chars reveal left-to-right). -->
+
+  <defs>
+    <linearGradient id="badgeBg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#161b22"/>
+      <stop offset="100%" stop-color="#1c2433"/>
+    </linearGradient>
+    <filter id="badgeShadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Badge container -->
+  <rect x="1" y="1" width="358" height="46" rx="8"
+        fill="url(#badgeBg)" stroke="#30363d" stroke-width="1" filter="url(#badgeShadow)"/>
+
+  <!-- Status chip (left) -->
+  <rect class="status-chip" x="10" y="12" width="24" height="24" rx="4" fill="#0d3321"/>
+  <text x="22" y="29" text-anchor="middle"
+        font-family="'Inter', sans-serif" font-size="12" fill="#3fb950">✓</text>
+
+  <!-- "Tx" label -->
+  <text x="44" y="20" font-family="'JetBrains Mono', monospace"
+        font-size="9" fill="#8b949e" letter-spacing="0.5">
+    TX HASH
+  </text>
+
+  <!-- Hash value (typewriter target) -->
+  <text class="hash-value" x="44" y="36"
+        font-family="'JetBrains Mono', monospace" font-size="11" fill="#58a6ff">
+    0x5ba20c8771787ff4...0039f19dd3b1564
+  </text>
+
+  <!-- External link icon (right) -->
+  <g class="link-icon" transform="translate(326, 14)" opacity="0.6">
+    <rect x="0" y="0" width="18" height="18" rx="3" fill="none" stroke="#58a6ff" stroke-width="1"/>
+    <path d="M 7,11 L 14,4 M 9,4 L 14,4 L 14,9" stroke="#58a6ff" stroke-width="1.2"
+          fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

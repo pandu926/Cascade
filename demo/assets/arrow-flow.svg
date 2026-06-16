@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 300" fill="none">
+  <!-- Arrow Flow: Vertical curved path representing payment flowing UP the tree.
+       Used as MotionPath guide for the gold particle animation.
+       The path goes from bottom (invoke entry) to top (deepest leaf creator). -->
+
+  <defs>
+    <linearGradient id="flowGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#f0b90b" stop-opacity="0.9"/>
+      <stop offset="40%" stop-color="#f0b90b" stop-opacity="0.5"/>
+      <stop offset="80%" stop-color="#2dd4bf" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0.1"/>
+    </linearGradient>
+    <filter id="flowGlow" x="-30%" y="-2%" width="160%" height="104%">
+      <feGaussianBlur stdDeviation="2.5" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Main flow path (the MotionPath the particle follows) -->
+  <path class="motion-path" id="flowPath"
+        d="M 30,290 C 30,250 30,230 30,200 C 30,170 30,150 30,120 C 30,90 30,70 30,40 L 30,15"
+        stroke="url(#flowGrad)" stroke-width="2" fill="none"
+        stroke-linecap="round" filter="url(#flowGlow)"/>
+
+  <!-- Background track (always visible, very subtle) -->
+  <path d="M 30,290 C 30,250 30,230 30,200 C 30,170 30,150 30,120 C 30,90 30,70 30,40 L 30,15"
+        stroke="rgba(45,212,191,0.08)" stroke-width="4" fill="none"
+        stroke-linecap="round"/>
+
+  <!-- Arrowhead at top -->
+  <polygon points="22,20 30,6 38,20" fill="#2dd4bf" opacity="0.7"/>
+
+  <!-- Node intersection markers (where payment splits happen) -->
+  <circle class="split-point" cx="30" cy="200" r="5" fill="none"
+          stroke="#f0b90b" stroke-width="1.5" opacity="0.5"/>
+  <circle class="split-point" cx="30" cy="120" r="5" fill="none"
+          stroke="#f0b90b" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Entry point marker (bottom) -->
+  <circle cx="30" cy="290" r="4" fill="#f0b90b" opacity="0.7"/>
+  <text x="30" y="299" text-anchor="middle" font-family="'JetBrains Mono', monospace"
+        font-size="6" fill="rgba(240,185,11,0.6)">INVOKE</text>
+</svg>

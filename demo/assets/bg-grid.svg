@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Background Grid: Subtle dot-grid pattern for dark background.
+       Tile as CSS background via url() + repeat.
+       Gives depth + "technical blueprint" feel without competing with content. -->
+
+  <defs>
+    <pattern id="dotGrid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="0.8" fill="rgba(148,163,184,0.12)"/>
+    </pattern>
+    <pattern id="lineGrid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="40" x2="40" y2="40" stroke="rgba(148,163,184,0.05)" stroke-width="0.5"/>
+      <line x1="40" y1="0" x2="40" y2="40" stroke="rgba(148,163,184,0.05)" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Line grid (larger, very subtle) -->
+  <rect width="100" height="100" fill="url(#lineGrid)"/>
+
+  <!-- Dot grid overlay (smaller, slightly brighter) -->
+  <rect width="100" height="100" fill="url(#dotGrid)"/>
+
+  <!-- Corner accent markers (reference points, subtle) -->
+  <circle cx="0" cy="0" r="1.5" fill="rgba(45,212,191,0.15)"/>
+  <circle cx="100" cy="0" r="1.5" fill="rgba(45,212,191,0.15)"/>
+  <circle cx="0" cy="100" r="1.5" fill="rgba(45,212,191,0.15)"/>
+  <circle cx="100" cy="100" r="1.5" fill="rgba(45,212,191,0.15)"/>
+</svg>
