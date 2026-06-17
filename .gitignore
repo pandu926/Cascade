@@ -9,6 +9,15 @@ broadcast/
 # Planning (internal workflow, not product)
 .planning/
 
+# Internal dev files (not for public)
+CLAUDE.md
+HACKATHON_PHAROS_PHASE1.md
+SUBMISSION.md
+docs/DEMO_VIDEO_SCRIPT.md
+demo/assets/phase2-teaser.svg
+script/LiveBundle.s.sol
+script/LiveBundleMainnet.s.sol
+
 # Dependencies
 node_modules/
 lib/forge-std/.git
