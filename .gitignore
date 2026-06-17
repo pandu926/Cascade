@@ -1,4 +1,29 @@
+# Environment (PRIVATE KEYS - never commit)
 .env
+
+# Foundry artifacts
 out/
 cache/
 broadcast/
+
+# Planning (internal workflow, not product)
+.planning/
+
+# Dependencies
+node_modules/
+lib/forge-std/.git
+
+# Slither virtual environment
+.venv/
+venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Temp
+*.log
