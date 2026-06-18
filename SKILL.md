@@ -1,203 +1,169 @@
 ---
 name: cascade
 description: >
-  Cascade is the Pharos recursive skill-royalty registry + payment router. Use this skill
-  whenever the user mentions "pharos royalties", "skill registry", "recursive royalty",
-  "register a skill", "invoke" or "pay a skill", "claim royalties", or wants to "split a
-  payment up a dependency tree" on Pharos. It exposes three on-chain actions against the
-  live Cascade contract — register an immutable priced skill with declared dependency
-  shares, invoke (pay) a skill so its payment fans up the whole dependency tree crediting
-  every creator, and claim accrued royalties (pull-payment). Requires the `cast` and
-  `forge` (Foundry) CLIs and targets Pharos atlantic-testnet (default) or mainnet. Do not
-  attempt Cascade on-chain operations without this skill — you will use the wrong network
-  config or the wrong contract address.
-version: 0.1.0
+  Cascade is the economic layer for composable AI skills on Pharos. It lets skill authors
+  earn recursive royalties whenever their skill is used — directly or as a dependency of
+  another skill. Use this skill when the user wants to: register a skill on Pharos,
+  invoke/pay for a skill, check royalty balances, claim accrued royalties, or understand
+  how recursive revenue sharing works on-chain. Works on Pharos mainnet (PROS) and
+  Atlantic testnet (PHRS).
+version: 1.0.0
 requires:
   anyBins:
-  - cast
-  - forge
+  - node
 ---
 
 # Cascade — Recursive Skill Royalties on Pharos
 
-Cascade is a registry + router for composable, priced "skills". Each skill is registered
-once (immutable) with a native-token price and a declared list of dependency skills plus
-the basis-point share routed into each dependency's subtree. A single `invoke` payment
-fans up the entire declared tree, crediting each creator's internal balance. Creators
-withdraw via `claim()` (pull-payment). The contract is account-agnostic: an EOA and a
-smart account hit the identical code path.
+## What It Does
 
-Three actions, driven through Foundry (`cast` / `forge`):
+Cascade is a smart contract that automatically splits payments up a skill's dependency
+tree. When someone pays to use a skill, every creator in the composition chain gets their
+declared share — recursively, in one transaction, with no intermediary.
 
-- **register** — create a priced skill with optional dependency shares.
-- **invoke** — pay a skill's exact price; royalties fan up its dependency tree in one tx.
-- **claim** — withdraw your accrued royalty balance.
+**Example:** Carol's agent uses Bob's summarizer, which uses Alice's translator. When
+someone pays Carol 0.005 PROS → Carol keeps 50%, Bob gets 30%, Alice gets 20%.
+Automatically. Every time.
 
-## Prerequisites
-
-1. **Install Foundry** (MANDATORY — MUST be done before ANY other action):
-   - The Agent MUST first run `which cast` to check if Foundry is installed.
-   - If `cast` is NOT found, the Agent MUST immediately run the following installation
-     commands. **Do NOT skip installation. Do NOT fall back to curl/JSON-RPC as a
-     workaround. Do NOT proceed with any other task until Foundry is installed.**
-     ```bash
-     curl -L https://foundry.paradigm.xyz | bash
-     ```
-     Then run:
-     ```bash
-     source ~/.zshenv && foundryup
-     ```
-     Then verify with:
-     ```bash
-     cast --version
-     ```
-   - If installation fails, inform the user and STOP. Do not attempt alternative approaches.
-2. **Configure Private Key**: Write operations (`register`, `invoke`, `claim`) require a
-   private key, provided via one of the following:
-   - Command argument: `--private-key <your_private_key>`
-   - Environment variable: `$PRIVATE_KEY` (then pass `--private-key $PRIVATE_KEY`)
-
-   Read-only queries (`balances`, `skillCount`) need no key.
-
-## Network Configuration
-
-Network information is stored in `assets/networks.json`, containing both the Atlantic
-testnet and mainnet chains. Never invent RPC URLs, chain IDs, or explorer URLs — always
-read them from this file.
-
-- **Default Network**: Atlantic testnet (`atlantic-testnet`, chainId `688689`). Used when
-  the user does not specify a network.
-- **Switching Networks**: When the user specifies `mainnet` (chainId `1672`), read the
-  corresponding entry's `rpcUrl` from `assets/networks.json`.
-- **Usage**: Read `assets/networks.json` and fill the target network's `rpcUrl` into each
-  command's `--rpc-url` parameter.
+## Quick Start
 
 ```bash
-# Example: reading network configuration
-RPC_URL=$(jq -r '.networks[] | select(.name=="atlantic-testnet") | .rpcUrl' assets/networks.json)
-EXPLORER_URL=$(jq -r '.networks[] | select(.name=="atlantic-testnet") | .explorerUrl' assets/networks.json)
+# Clone and install
+git clone https://github.com/pandu926/Cascade.git
+cd Cascade && npm install
+
+# Set your private key
+export CASCADE_PRIVATE_KEY=0x...
+export CASCADE_NETWORK=mainnet   # or "testnet"
 ```
 
-The Foundry config (`foundry.toml`) also defines `--rpc-url` aliases that resolve to the
-same endpoints: `atlantic_testnet` and `mainnet`. Either the alias or the literal
-`rpcUrl` from `assets/networks.json` works.
+## Commands
 
-### Live Deployed Contract
-
-A live Cascade instance is already deployed on **atlantic-testnet** — interact with it
-immediately, no deployment needed:
-
-```
-CASCADE = 0xd41C32562D0BE20D354120E1De11A91abC340F50   (atlantic-testnet, chainId 688689)
-```
-
-Export it once and reuse across all commands:
+### Register a skill
 
 ```bash
-export CASCADE=0xd41C32562D0BE20D354120E1De11A91abC340F50
+# Leaf skill (building block, no price, no deps)
+node sdk/cli.js register
+
+# Skill with price and dependencies
+node sdk/cli.js register --price 0.005 --deps 7,8 --shares 4000,2000
 ```
 
-View it on the explorer: `<explorerUrl>/address/0xd41C32562D0BE20D354120E1De11A91abC340F50`
-(read `explorerUrl` from `assets/networks.json`).
+Parameters:
+- `--price` — cost in native token (PROS/PHRS) to invoke this skill. Default: 0
+- `--deps` — comma-separated IDs of skills this depends on
+- `--shares` — comma-separated basis points (0-10000) each dep gets. Sum must be ≤ 10000
 
-## Capability Index
+Rules:
+- Dependencies must already exist (lower ID)
+- Shares are in basis points: 4000 = 40%
+- Remainder after all deps = creator's own cut
+- Immutable once registered — cannot be changed
+- Max depth: 8 levels
 
-Load the corresponding reference file based on user needs to get full command templates
-(both `forge script` and raw `cast` forms), parameter tables, output parsing, and
-per-operation error handling.
-
-| User Need | Capability | Detailed Instructions |
-|-----------|------------|----------------------|
-| Register a new priced skill (with optional dependency shares) | `register(uint256,uint256[],uint256[])` via `forge script` / `cast send` | → `references/register.md#register-a-skill` |
-| Invoke / pay a skill (fan royalties up its dependency tree) | `invoke(uint256)` payable via `forge script` / `cast send` | → `references/invoke.md#invoke-a-skill` |
-| Claim accrued royalties (withdraw your balance) | `claim()` via `forge script` / `cast send` | → `references/claim.md#claim-royalties` |
-| Read accrued claimable balance for an address | `balances(address)` via `cast call` | → `references/claim.md#read-accrued-balance` |
-| Read number of registered skills (highest valid id) | `skillCount()` via `cast call` | → `references/claim.md#read-skill-count` |
-
-## General Error Handling
-
-Before executing commands, the Agent should perform the Write Operation Pre-checks below;
-when commands fail, surface a user-friendly message based on the revert string in stderr.
-Cascade's exact revert strings:
-
-| Error Scenario | CLI Error Signature | Handling |
-|---------------|--------------------|----------|
-| `register`: dep ids / shares array length differ | `execution reverted: len mismatch` | DEP_IDS and DEP_SHARES must be the same length, 1:1 aligned |
-| `register`: a dependency id is 0 or ≥ the new id | `execution reverted: bad dep id` | Each dep id must be a strictly-smaller, already-registered id (register bottom-up; id 0 is invalid) |
-| `register`: dependency shares exceed 100% | `execution reverted: shares > 10000` | Σ(depShares) must be ≤ 10000 bps (the remainder is the registering creator's own cut) |
-| `register`: tree too deep | `execution reverted: depth > 8` | Dependency tree depth is capped at 8; flatten the tree |
-| `invoke`: skill id does not exist | `execution reverted: no skill` | skillId must be in `1..skillCount()`; check `skillCount()` |
-| `invoke`: wrong payment amount | `execution reverted: wrong value` | `--value` MUST equal the skill's registered price exactly (no over/underpay) |
-| Private key not configured | Command missing `--private-key` / `PRIVATE_KEY` unset | Prompt user to set `$PRIVATE_KEY` and pass `--private-key $PRIVATE_KEY` |
-| Insufficient balance | `insufficient funds` | Prompt insufficient balance; show current balance via `cast balance` |
-| Missing network config | `assets/networks.json` unreadable | Prompt that the config file is missing or malformed |
-| Unsupported network | Network name not in config list | Only `atlantic-testnet` and `mainnet` are supported |
-
-See each reference file for the full per-operation error table.
-
-## Security Reminders
-
-- **Private Key Protection**: Never expose private keys in logs, chat history, or version
-  control. Store the key in the `$PRIVATE_KEY` environment variable and reference it
-  explicitly via `--private-key $PRIVATE_KEY`. Note: `forge` / `cast` do not automatically
-  read environment variables for signing — the key must be passed as a command argument.
-- **Exact-Payment Warning**: `invoke` reverts unless `msg.value == skill price`. Always
-  read the registered price first and send exactly that amount via `--value`. Over- or
-  under-paying wastes gas on a guaranteed revert.
-- **Immutability**: A registered skill (price + dependency shares) can never be changed.
-  Double-check `price`, `DEP_IDS`, and `DEP_SHARES` before registering.
-- **Network Confirmation**: Before any write operation, clearly inform the user of the
-  target network. Mainnet operations require a prominent warning and user re-confirmation
-  to prevent accidental spends.
-
-## Write Operation Pre-checks (Required for All Write Operations)
-
-For all operations requiring a private key (`register`, `invoke`, `claim`), the Agent must
-complete the following before execution:
-
-### 1. Private Key Check
+### Invoke (pay for) a skill
 
 ```bash
-# Check if the environment variable exists (without outputting the private key)
-[ -n "$PRIVATE_KEY" ] && echo "PRIVATE_KEY is set" || echo "PRIVATE_KEY is not set"
+node sdk/cli.js invoke --skill 9
 ```
 
-- If **not set**: Prompt the user to configure via `export PRIVATE_KEY=<your_private_key>`,
-  do not proceed.
-- If **set**: Continue.
+The SDK auto-reads the skill's price from chain. Payment cascades through the entire
+dependency tree in one transaction.
 
-### 2. Derive Public Address and Confirm with User
+### Check balance
 
 ```bash
-cast wallet address --private-key $PRIVATE_KEY
+node sdk/cli.js balance 0xYourAddress
 ```
 
-### 3. Network Confirmation (Must Clearly Inform User)
-
-Read the target network from `assets/networks.json` and display the network name + type.
-
-- If the user did not specify a network, use `atlantic-testnet` and clearly inform the
-  user: **Current operation targets the Atlantic testnet**.
-- If the user specified `mainnet`, prominently warn: **Current operation targets mainnet,
-  please confirm to proceed**.
-
-Example confirmation:
-
-```
-Detected private key address: 0x1234...abcd
-Target network: Atlantic Testnet (atlantic-testnet)
-Contract: Cascade @ 0xd41C32562D0BE20D354120E1De11A91abC340F50
-Proceed with this account on this network?
-```
-
-### 4. Automatic Balance Check
-
-After confirming account + network, query the balance so the user knows they can cover
-price + gas:
+### Claim (withdraw) royalties
 
 ```bash
-cast balance $(cast wallet address --private-key $PRIVATE_KEY) --rpc-url <rpc> --ether
+node sdk/cli.js claim
 ```
 
-Use the network's `nativeToken` (`PHRS` on atlantic-testnet, `PROS` on mainnet) when
-displaying balances instead of the generic "ether".
+Withdraws all accrued royalties to your wallet. Pull-payment: no one can block your
+earnings.
+
+### View contract info
+
+```bash
+node sdk/cli.js skill-info
+```
+
+## Use as a Library (for agents)
+
+```javascript
+import { createCascade } from "./sdk/index.js";
+
+const cascade = createCascade({
+  privateKey: process.env.CASCADE_PRIVATE_KEY,
+  network: "mainnet"
+});
+
+// Register
+const { skillId } = await cascade.register({
+  price: "0.005",
+  depIds: [7],
+  depShares: [4000]
+});
+
+// Invoke (price auto-fetched)
+await cascade.invoke({ skillId: 9 });
+
+// Check balance
+const balance = await cascade.getBalance("0x...");
+
+// Claim
+await cascade.claim();
+```
+
+## Networks
+
+| Network | Token | Contract |
+|---------|-------|----------|
+| Mainnet (1672) | PROS | `0x31bE4C6B5711913D818e377ebd809d4397FF3c84` |
+| Testnet (688689) | PHRS | `0xd41C32562D0BE20D354120E1De11A91abC340F50` |
+
+## How Revenue Sharing Works
+
+```
+User pays 0.005 PROS to invoke Skill C
+         │
+         ▼
+   ┌─────────────┐
+   │  Skill C    │ keeps 50% = 0.0025
+   │  dep: B@50% │
+   └──────┬──────┘
+          │ 50% flows down
+          ▼
+   ┌─────────────┐
+   │  Skill B    │ keeps 60% of received = 0.0015
+   │  dep: A@40% │
+   └──────┬──────┘
+          │ 40% flows down
+          ▼
+   ┌─────────────┐
+   │  Skill A    │ receives 0.0010
+   │  (leaf)     │
+   └─────────────┘
+
+Total: 0.0025 + 0.0015 + 0.0010 = 0.005 ✓ (exact conservation)
+```
+
+## Error Reference
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| Share sum exceeds 10000 | dep shares add up to more than 100% | Reduce shares |
+| Bad dependency | dep ID doesn't exist or >= new ID | Register deps first (bottom-up) |
+| Depth exceeded | Tree deeper than 8 levels | Flatten dependency chain |
+| Wrong value | Payment doesn't match skill price | SDK handles this automatically |
+| Nothing to claim | Balance is 0 | Earn royalties first via invoke |
+
+## Security Notes
+
+- Private keys are never logged or stored by the SDK
+- Pull-payment pattern: no reentrancy possible
+- Immutable registration: no one can change terms after registration
+- Depth cap 8: bounded gas for recursive distribution

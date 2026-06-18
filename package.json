@@ -1,7 +1,7 @@
 {
-  "name": "cascade-sdk",
+  "name": "cascade-pharos",
   "version": "1.0.0",
-  "description": "SDK for Cascade — recursive skill royalties on Pharos",
+  "description": "Cascade — recursive skill royalties on Pharos. The economic layer for composable AI skills.",
   "type": "module",
   "main": "sdk/index.js",
   "bin": {
@@ -12,7 +12,12 @@
     "invoke": "node sdk/cli.js invoke",
     "claim": "node sdk/cli.js claim",
     "balance": "node sdk/cli.js balance",
-    "skill-info": "node sdk/cli.js skill-info"
+    "info": "node sdk/cli.js skill-info"
+  },
+  "keywords": ["pharos", "ai-agent", "skill", "royalty", "recursive", "web3", "blockchain"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pandu926/Cascade.git"
   },
   "dependencies": {
     "viem": "^2.21.0"

@@ -204,14 +204,26 @@ const claim = await cascade.claim();
 
 ### Install as an Agent Skill
 
-For AI agents (Claude Code, Codex, OpenClaw):
+For AI agents (Claude Code, Codex, Cursor, etc.) — the agent reads `SKILL.md` and
+understands how to register, invoke, and claim skills via natural language:
 
 ```bash
-# Add Cascade as a skill your agent can use
-cp -r SKILL.md references/ assets/ ~/.claude/skills/cascade/
+# Option 1: Clone into your project
+git clone https://github.com/pandu926/Cascade.git
+cd Cascade && npm install
+
+# Option 2: Copy skill files into your agent's skill directory
+cp -r SKILL.md references/ assets/ sdk/ package.json ~/.claude/skills/cascade/
+cd ~/.claude/skills/cascade && npm install
 ```
 
-The agent will then be able to register, invoke, and claim skills via natural language.
+Then tell your agent:
+- "Register a translation skill on Pharos mainnet"
+- "Invoke skill 9"
+- "Check my Cascade royalty balance"
+- "Claim my accrued royalties"
+
+The agent reads `SKILL.md`, understands the context, and executes via the SDK.
 
 ### Use via cast (Foundry CLI)
 
