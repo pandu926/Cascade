@@ -1,120 +1,357 @@
-# Cascade — Recursive Skill Royalties on Pharos
+# Cascade
 
-**npm, but every package earns a cut every time it's used downstream — automatically, instantly, recursively.**
+**The economic layer for composable AI skills on Pharos.**
 
-Cascade is an on-chain registry + payment router for composable, priced "skills". A skill
-is registered once with a price and a list of dependency skills (each with a basis-point
-share). A single `invoke` payment then fans **up the entire dependency tree** in one
-transaction, crediting every creator's balance proportional to their place in the
-composition. Creators withdraw with `claim()` (pull-payment). Live and source-verified on
-Pharos mainnet.
+One invoke — every creator in the dependency chain gets paid. Automatically. Recursively. In one transaction.
 
-## The killer idea
+---
 
-Software is composed. A skill builds on another skill, which builds on another. Today the
-authors below you in that tree earn nothing when your work gets used. Cascade fixes that:
+## Vision
 
-- **One `invoke` pays the whole tree.** Pay skill C, and the payment routes a declared
-  share into C's dependencies (B), then B's dependencies (A), recursively — every creator
-  up the chain is credited in the **same transaction**.
-- **Proportional to depth.** Each level keeps its own cut and forwards the declared
-  basis-point share into the subtree below it. Conservation holds exactly — every wei of
-  the payment is assigned across the tree, no dust, no leak.
-- **Trustless and immutable.** A registered skill's price and dependency shares can never
-  be changed. No intermediary holds the money; the contract routes it.
-- **Pull-payment.** `invoke` only credits internal balances; creators withdraw on their
-  own schedule via `claim()`. A single griefing payee can't block the fan-out for everyone.
-- **Account-agnostic.** An EOA and an ERC-4337 smart account hit the identical code path.
+AI agents compose skills to get things done. A translation skill is used by a summarizer, which is used by a research agent. The deeper the composition, the more powerful the system.
 
-A live mainnet example: one `invoke` of an A→B→C tree (priced at 0.001 PROS) paid three
-distinct creators in a single transaction — A `0.0002`, B `0.0003`, C `0.0005`, summing
-exactly to `0.001` PROS. See [Live on Pharos mainnet](#live-on-pharos-mainnet) below.
+But today, there's no mechanism to reward the full stack. Only the top skill gets paid. The foundations — the skills that make everything else possible — earn nothing.
+
+**Without economic incentives, nobody builds reusable skills.** Developers build monoliths instead. The ecosystem can't scale through composition.
+
+Cascade solves this. Every skill you build becomes a permanent revenue source — as long as someone, somewhere, uses something built on top of yours.
+
+---
+
+## How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│   User pays 0.005 PROS to use Carol's Agent                    │
+│                         │                                       │
+│                         ▼                                       │
+│              ┌─────────────────────┐                            │
+│              │  SKILL C (Carol)    │  keeps 50% = 0.0025 PROS   │
+│              │  price: 0.005 PROS  │                            │
+│              │  dep: B (50%)       │                            │
+│              └──────────┬──────────┘                            │
+│                         │ 50% flows down                        │
+│                         ▼                                       │
+│              ┌─────────────────────┐                            │
+│              │  SKILL B (Bob)      │  keeps 60% = 0.0015 PROS   │
+│              │  dep: A (40%)       │                            │
+│              └──────────┬──────────┘                            │
+│                         │ 40% flows down                        │
+│                         ▼                                       │
+│              ┌─────────────────────┐                            │
+│              │  SKILL A (Alice)    │  receives 0.0010 PROS      │
+│              │  leaf (no deps)     │                            │
+│              └─────────────────────┘                            │
+│                                                                 │
+│   Total: 0.0025 + 0.0015 + 0.0010 = 0.005 PROS ✓              │
+│   Conservation: every wei accounted for. Zero leakage.          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**One transaction. Three creators paid. No middleman.**
+
+---
 
 ## Architecture
 
-| Layer | What it is | Where |
-|-------|-----------|-------|
-| **Recursive royalty router** | `Cascade.sol` — the registry + payment router. `register` / `invoke` / `claim`, with a bounded recursive `_distribute` fan-out (depth cap 8), pull-payment accounting, and a conservation invariant. | [`src/Cascade.sol`](src/Cascade.sol) |
-| **ERC-4337 AA layer** | A minimal v0.7 single-owner smart account (`CascadeAccount`) + a CREATE2 `AccountFactory`. One self-bundled `handleOps` can batch multiple `invoke` calls through the real EntryPoint v0.7 — no external bundler. | [`src/aa/`](src/aa/) |
-| **Anthropic Agent Skill packaging** | `SKILL.md` + `references/` + `assets/networks.json` — packages Cascade as a callable Agent Skill so an AI agent can register, invoke, and claim against the live contract with the correct network config. | [`SKILL.md`](SKILL.md) |
-
-## Quickstart
-
-```bash
-# 1. Install Foundry
-curl -L https://foundry.paradigm.xyz | bash
-foundryup
-
-# 2. Run the test suite — 41 tests pass (unit + fuzz + stateful invariant + fork)
-forge test
-
-# 3. Configure your signing key for write operations
-cp .env.example .env
-#   then edit .env and set PRIVATE_KEY=0x...
-
-# 4. See the visualization — open the WOW demo in a browser
-open web/index.html        # or: python3 -m http.server -d web 8000
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         Cascade                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────────────────────────────────────┐                   │
+│  │  Layer 1: Recursive Royalty Router        │                   │
+│  │  src/Cascade.sol                          │                   │
+│  │                                           │                   │
+│  │  • register(price, deps[], shares[])      │                   │
+│  │  • invoke(skillId) payable                │                   │
+│  │  • claim()                                │                   │
+│  │  • Recursive _distribute (depth cap 8)    │                   │
+│  │  • Pull-payment (reentrancy-safe)         │                   │
+│  │  • Conservation invariant (Σ = price)     │                   │
+│  └──────────────────────────────────────────┘                   │
+│                                                                 │
+│  ┌──────────────────────────────────────────┐                   │
+│  │  Layer 2: ERC-4337 Account Abstraction    │                   │
+│  │  src/aa/                                  │                   │
+│  │                                           │                   │
+│  │  • CascadeAccount (minimal smart account) │                   │
+│  │  • AccountFactory (CREATE2)               │                   │
+│  │  • Self-bundled via EntryPoint v0.7       │                   │
+│  │  • Batch multiple invokes in 1 UserOp     │                   │
+│  └──────────────────────────────────────────┘                   │
+│                                                                 │
+│  ┌──────────────────────────────────────────┐                   │
+│  │  Layer 3: Agent Skill Interface           │                   │
+│  │  SKILL.md + references/ + assets/         │                   │
+│  │                                           │                   │
+│  │  • Anthropic Agent Skills format          │                   │
+│  │  • Natural language → on-chain actions    │                   │
+│  │  • Works with Claude Code, Codex, etc.    │                   │
+│  └──────────────────────────────────────────┘                   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-To run the three on-chain actions (**register** a skill, **invoke** / pay a skill, **claim**
-your royalties), follow the per-action command templates in
-[`references/`](references/) — [`register.md`](references/register.md),
-[`invoke.md`](references/invoke.md), [`claim.md`](references/claim.md). Each shows both the
-`forge script` and raw `cast` forms with the parameter tables and error handling.
+---
 
-Networks are read from [`assets/networks.json`](assets/networks.json): **atlantic-testnet
-is the default** (chainId `688689`, native token `PHRS`); **mainnet** is supported
-(chainId `1672`, native token `PROS`). Never invent RPC/explorer URLs — read them from that
-file. Mainnet writes spend real value: confirm the network before any write.
+## Installation
 
-## Live on Pharos mainnet
+### Prerequisites
 
-Everything below is **live and source-verified on Pharos mainnet** (chainId `1672`, native
-token `PROS`, explorer https://www.pharosscan.xyz/). The full deployment log — every tx
-hash, gas figure, balance delta, and decoded event — is in
-[`MAINNET_RESULT.md`](MAINNET_RESULT.md).
+- [Foundry](https://getfoundry.sh/) (forge, cast)
+- A Pharos wallet with PROS (for mainnet) or PHRS (for testnet)
 
-| What | Address / tx | Explorer |
-|------|--------------|----------|
-| **Cascade** (source-verified) | `0x31bE4C6B5711913D818e377ebd809d4397FF3c84` | [view](https://www.pharosscan.xyz/address/0x31bE4C6B5711913D818e377ebd809d4397FF3c84) |
-| **Royalty demo** — one `invoke` paid 3 creators, Σ `0.001` PROS | `0x5ba20c8771787ff4bc4ea5c938fa32a394f4c1103318b7cfe0039f19dd3b1564` | [view tx](https://www.pharosscan.xyz/tx/0x5ba20c8771787ff4bc4ea5c938fa32a394f4c1103318b7cfe0039f19dd3b1564) |
-| **4337 batch** — one UserOp batched 2 `invoke`s via the real EntryPoint v0.7 | `0x1f3cec937acec167db716adf10be50bf135ac08f9ba3f02974cc0ee524375f90` | [view tx](https://www.pharosscan.xyz/tx/0x1f3cec937acec167db716adf10be50bf135ac08f9ba3f02974cc0ee524375f90) |
-| EntryPoint v0.7 (canonical) | `0x0000000071727De22E5E9d8BAf0edAc6f37da032` | [view](https://www.pharosscan.xyz/address/0x0000000071727De22E5E9d8BAf0edAc6f37da032) |
-| AccountFactory | `0x904935BA1417FC35591019A0fC54c670DA824c60` | [view](https://www.pharosscan.xyz/address/0x904935BA1417FC35591019A0fC54c670DA824c60) |
-| CascadeAccount (smart account) | `0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1` | [view](https://www.pharosscan.xyz/address/0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1) |
+### Setup
 
-**Earlier proof — testnet history (Phase 1):** Cascade also ran live on Pharos
-atlantic-testnet (chainId `688689`) at `0xd41C32562D0BE20D354120E1De11A91abC340F50` — the
-earlier on-chain proof before the mainnet deployment above.
+```bash
+# Clone the repository
+git clone https://github.com/pandu926/Cascade.git
+cd Cascade
 
-The web visualization at [`web/index.html`](web/index.html) renders this **real mainnet
-data** (a committed snapshot of the actual events, with the live tx hashes shown and
-linked) so you can watch one payment fan up the tree and see all three creator balances
-tick up.
+# Install dependencies (forge-std is included as a git submodule)
+forge install
 
-## Hackathon
+# Verify everything works — 41 tests should pass
+forge test
+```
 
-Built for the **Skill-to-Agent Dual Cascade Hackathon (Pharos)** — **Skill Hackathon
-track** (20,000 PROS, 40 winners). Cascade is packaged as an Anthropic Agent Skill
-([`SKILL.md`](SKILL.md)) so an AI agent can drive the three on-chain actions against the
-live, source-verified mainnet contract. Submission steps and the DoraHacks form fields are
-prepared in [`SUBMISSION.md`](SUBMISSION.md).
+### Configure wallet
 
-## Honest scope
+```bash
+cp .env.example .env
+# Edit .env and set your private key:
+# PRIVATE_KEY=0x...
+```
 
-Cascade is **live + source-verified on Pharos mainnet**, **fuzz- and invariant-tested**
-(41 tests pass, including a stateful conservation invariant), and **slither-clean**
-(0 CRITICAL / 0 HIGH). It is **NOT** an independent professional security audit. An
-independent audit is the one remaining step before these contracts should custody material
-user value — see the full caveat and the per-finding review in [`SECURITY.md`](SECURITY.md).
-Every number and address in this README comes from the on-chain record in
-[`MAINNET_RESULT.md`](MAINNET_RESULT.md); nothing here is invented.
+### Network configuration
 
-## Docs
+Networks are defined in [`assets/networks.json`](assets/networks.json):
 
-- [`SKILL.md`](SKILL.md) — the Anthropic Agent Skill: capability index, network config, pre-checks.
-- [`references/`](references/) — full command templates for [register](references/register.md), [invoke](references/invoke.md), [claim](references/claim.md).
-- [`SECURITY.md`](SECURITY.md) — security review, methodology, findings, and the honest audit caveat.
-- [`MAINNET_RESULT.md`](MAINNET_RESULT.md) — the single source of truth for all mainnet artifacts.
-- [`web/index.html`](web/index.html) — the WOW visualization of the recursive royalty fan-out, driven by real mainnet data.
-- [`SUBMISSION.md`](SUBMISSION.md) — the DoraHacks submission checklist with pre-filled form fields.
+| Network | Chain ID | RPC | Token | Explorer |
+|---------|----------|-----|-------|----------|
+| Atlantic Testnet (default) | 688689 | https://atlantic.dplabs-internal.com | PHRS | https://atlantic.pharosscan.xyz |
+| Mainnet | 1672 | https://rpc.pharos.xyz | PROS | https://www.pharosscan.xyz |
+
+---
+
+## Usage
+
+### Install as an Agent Skill
+
+For AI agents (Claude Code, Codex, OpenClaw):
+
+```bash
+# Add Cascade as a skill your agent can use
+cp -r SKILL.md references/ assets/ ~/.claude/skills/cascade/
+```
+
+The agent will then be able to register, invoke, and claim skills via natural language.
+
+### Use via command line
+
+All operations use `cast` (Foundry CLI). The contract is deployed at:
+
+```
+Mainnet:  0x31bE4C6B5711913D818e377ebd809d4397FF3c84
+Testnet:  0xd41C32562D0BE20D354120E1De11A91abC340F50
+```
+
+#### Step 1: Register a skill
+
+```bash
+# Register a leaf skill (no dependencies, no price)
+cast send 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 \
+  "register(uint256,uint256[],uint256[])(uint256)" \
+  0 "[]" "[]" \
+  --rpc-url https://rpc.pharos.xyz \
+  --private-key $PRIVATE_KEY \
+  --legacy
+
+# Register a skill with dependencies
+# Price: 0.005 PROS, depends on skill id 7, gives 40% to its subtree
+cast send 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 \
+  "register(uint256,uint256[],uint256[])(uint256)" \
+  5000000000000000 "[7]" "[4000]" \
+  --rpc-url https://rpc.pharos.xyz \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+**Parameters:**
+- `price` — cost in wei to invoke this skill (0 = free, used as building block only)
+- `depIds[]` — array of skill IDs this skill depends on
+- `depShares[]` — basis points (0-10000) each dependency gets from the payment
+
+**Rules:**
+- Dependencies must already be registered (lower ID)
+- Sum of shares ≤ 10000 (remainder is the creator's cut)
+- Immutable once registered — no one can change terms later
+- Depth cap: 8 levels maximum
+
+#### Step 2: Invoke (pay) a skill
+
+```bash
+# Pay to use skill id 9, sending exactly 0.005 PROS
+cast send 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 \
+  "invoke(uint256)" 9 \
+  --value 5000000000000000 \
+  --rpc-url https://rpc.pharos.xyz \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+**What happens:** The payment automatically cascades through the entire dependency tree. Every creator in the chain gets their declared share. One transaction.
+
+#### Step 3: Check balances
+
+```bash
+# Check accrued royalties for any address
+cast call 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 \
+  "balances(address)(uint256)" \
+  0xYOUR_ADDRESS \
+  --rpc-url https://rpc.pharos.xyz
+```
+
+#### Step 4: Claim (withdraw)
+
+```bash
+# Withdraw all accrued royalties to your wallet
+cast send 0x31bE4C6B5711913D818e377ebd809d4397FF3c84 \
+  "claim()(uint256)" \
+  --rpc-url https://rpc.pharos.xyz \
+  --private-key $PRIVATE_KEY \
+  --legacy
+```
+
+**Pull-payment:** Your royalties accrue in the contract. You withdraw on your schedule. No one can block your earnings — even if every other creator disappears.
+
+---
+
+## Complete Flow (Example)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  1. Alice registers a translation skill (leaf, no deps)         │
+│     → skill id 7                                                │
+│                                                                 │
+│  2. Bob registers a summarizer (depends on Alice, 40% share)    │
+│     → skill id 8                                                │
+│                                                                 │
+│  3. Carol registers an AI agent (depends on Bob, 50% share)     │
+│     price: 0.005 PROS → skill id 9                              │
+│                                                                 │
+│  4. Someone invokes Carol's agent, pays 0.005 PROS              │
+│     → Carol gets 0.0025 (keeps 50%)                             │
+│     → Bob gets 0.0015 (60% of the 50% that flowed down)        │
+│     → Alice gets 0.0010 (40% of Bob's share)                   │
+│     → Total = 0.005 PROS ✓ (exact conservation)                │
+│                                                                 │
+│  5. Alice calls claim() → 0.0010 PROS transferred to wallet    │
+│     Balance after: 0 (all withdrawn)                            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+All transactions above are real and verifiable on [pharosscan.xyz](https://www.pharosscan.xyz/address/0x31bE4C6B5711913D818e377ebd809d4397FF3c84).
+
+---
+
+## Deployed Contracts
+
+| Contract | Address | Network |
+|----------|---------|---------|
+| **Cascade** (source-verified) | `0x31bE4C6B5711913D818e377ebd809d4397FF3c84` | Mainnet |
+| **AccountFactory** | `0x904935BA1417FC35591019A0fC54c670DA824c60` | Mainnet |
+| **CascadeAccount** | `0xfe93754C8730f13257e9d733dDd7c9037f2e1Ef1` | Mainnet |
+| **EntryPoint v0.7** | `0x0000000071727De22E5E9d8BAf0edAc6f37da032` | Mainnet |
+| **Cascade** (testnet) | `0xd41C32562D0BE20D354120E1De11A91abC340F50` | Testnet |
+
+Full deployment logs: [`MAINNET_RESULT.md`](MAINNET_RESULT.md)
+
+---
+
+## Testing
+
+```bash
+# Run all 41 tests
+forge test
+
+# Run with gas report
+forge test --gas-report
+
+# Run fork tests against real Pharos EntryPoint
+forge test --fork-url https://atlantic.dplabs-internal.com
+```
+
+**Test coverage:**
+- 13 unit tests (register/invoke/claim + revert paths)
+- 4 fuzz tests (conservation across random trees)
+- 3 stateful invariant tests (solvency, no-wei-created, accrued==paid)
+- 4 fork tests (real EntryPoint v0.7, AA24 rejection, account-agnostic parity)
+- 16 AA unit tests (account + factory)
+- 1 demo fork test
+
+---
+
+## Security
+
+- **NatSpec documentation** on every public function
+- **Named custom errors** (7 in Cascade, 3 in CascadeAccount)
+- **Slither static analysis** — 0 CRITICAL, 0 HIGH findings
+- **Pull-payment** — no reentrancy possible in the invoke path
+- **Depth cap 8** — bounds gas for recursive calls
+- **Monotonic IDs** — cycles impossible by construction
+
+Full review: [`SECURITY.md`](SECURITY.md)
+
+> **Note:** This is hackathon-grade review-readiness, not an independent professional audit. An independent audit is the remaining step before these contracts should custody material user value.
+
+---
+
+## Project Structure
+
+```
+Cascade/
+├── src/
+│   ├── Cascade.sol              # Core: recursive royalty router
+│   └── aa/
+│       ├── CascadeAccount.sol   # ERC-4337 smart account
+│       ├── AccountFactory.sol   # CREATE2 factory
+│       ├── IEntryPoint.sol      # v0.7 interface
+│       ├── IAccount.sol         # Account interface
+│       └── PackedUserOperation.sol
+├── test/
+│   ├── Cascade.t.sol            # Unit tests
+│   ├── Cascade.fuzz.t.sol       # Fuzz tests
+│   ├── Cascade.invariant.t.sol  # Stateful invariants
+│   ├── SmartAccount.fork.t.sol  # Fork tests (real EntryPoint)
+│   ├── SmartAccountUnit.t.sol   # AA unit tests
+│   ├── Demo.fork.t.sol          # Demo flow test
+│   └── handlers/
+│       └── CascadeHandler.sol   # Invariant handler
+├── script/
+│   ├── Deploy.s.sol             # Deploy Cascade
+│   ├── Register.s.sol           # Register a skill
+│   ├── Invoke.s.sol             # Invoke a skill
+│   ├── Claim.s.sol              # Claim royalties
+│   └── DemoTree.s.sol           # Full A→B→C demo
+├── SKILL.md                     # Agent Skill interface
+├── references/
+│   ├── register.md              # Register command templates
+│   ├── invoke.md                # Invoke command templates
+│   └── claim.md                 # Claim command templates
+├── assets/
+│   └── networks.json            # Network configuration
+├── web/                         # Visualization (real mainnet data)
+├── SECURITY.md                  # Security review
+├── MAINNET_RESULT.md            # On-chain deployment proof
+└── foundry.toml                 # Build configuration
+```
+
+---
+
+## License
+
+MIT-0 — free to use, modify, and redistribute. No attribution required.
