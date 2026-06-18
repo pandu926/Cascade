@@ -1,0 +1,21 @@
+{
+  "name": "cascade-sdk",
+  "version": "1.0.0",
+  "description": "SDK for Cascade — recursive skill royalties on Pharos",
+  "type": "module",
+  "main": "sdk/index.js",
+  "bin": {
+    "cascade": "./sdk/cli.js"
+  },
+  "scripts": {
+    "register": "node sdk/cli.js register",
+    "invoke": "node sdk/cli.js invoke",
+    "claim": "node sdk/cli.js claim",
+    "balance": "node sdk/cli.js balance",
+    "skill-info": "node sdk/cli.js skill-info"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  },
+  "license": "MIT-0"
+}

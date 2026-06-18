@@ -21,6 +21,7 @@ script/LiveBundleMainnet.s.sol
 # Dependencies
 node_modules/
 lib/forge-std/.git
+package-lock.json
 
 # Slither virtual environment
 .venv/

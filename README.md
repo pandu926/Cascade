@@ -101,7 +101,8 @@ Cascade solves this. Every skill you build becomes a permanent revenue source �
 
 ### Prerequisites
 
-- [Foundry](https://getfoundry.sh/) (forge, cast)
+- [Node.js](https://nodejs.org/) v18+ (for SDK)
+- [Foundry](https://getfoundry.sh/) (forge, cast) — only needed for contract development
 - A Pharos wallet with PROS (for mainnet) or PHRS (for testnet)
 
 ### Setup
@@ -111,10 +112,13 @@ Cascade solves this. Every skill you build becomes a permanent revenue source �
 git clone https://github.com/pandu926/Cascade.git
 cd Cascade
 
-# Install dependencies (forge-std is included as a git submodule)
+# Install SDK dependencies
+npm install
+
+# (Optional) Install Foundry deps for contract development
 forge install
 
-# Verify everything works — 41 tests should pass
+# Verify contracts — 41 tests should pass
 forge test
 ```
 
@@ -123,7 +127,14 @@ forge test
 ```bash
 cp .env.example .env
 # Edit .env and set your private key:
-# PRIVATE_KEY=0x...
+# CASCADE_PRIVATE_KEY=0x...
+```
+
+Or pass directly via CLI:
+
+```bash
+export CASCADE_PRIVATE_KEY=0x...
+export CASCADE_NETWORK=mainnet
 ```
 
 ### Network configuration
@@ -139,6 +150,58 @@ Networks are defined in [`assets/networks.json`](assets/networks.json):
 
 ## Usage
 
+### SDK (Recommended)
+
+The SDK provides a simple JavaScript/Node.js interface. No need to construct raw transactions.
+
+```bash
+# Register a leaf skill (free, no dependencies)
+node sdk/cli.js register --network mainnet
+
+# Register with price and dependencies
+node sdk/cli.js register --price 0.005 --deps 7 --shares 4000 --network mainnet
+
+# Invoke (pay for) a skill — price is auto-read from chain
+node sdk/cli.js invoke --skill 9 --network mainnet
+
+# Check accrued royalties
+node sdk/cli.js balance 0xYourAddress --network mainnet
+
+# Withdraw royalties
+node sdk/cli.js claim --network mainnet
+
+# View contract info
+node sdk/cli.js skill-info --network mainnet
+```
+
+#### Use as a library
+
+```javascript
+import { createCascade } from "./sdk/index.js";
+
+const cascade = createCascade({
+  privateKey: process.env.CASCADE_PRIVATE_KEY,
+  network: "mainnet"  // or "testnet"
+});
+
+// Register a skill with 0.005 PROS price, depending on skill 7 (40% share)
+const { skillId, hash } = await cascade.register({
+  price: "0.005",
+  depIds: [7],
+  depShares: [4000]
+});
+
+// Invoke — price is auto-fetched from chain
+const result = await cascade.invoke({ skillId: 9 });
+console.log(`Paid: ${result.paid} PROS`);
+
+// Check balance
+const balance = await cascade.getBalance("0x...");
+
+// Claim all accrued royalties
+const claim = await cascade.claim();
+```
+
 ### Install as an Agent Skill
 
 For AI agents (Claude Code, Codex, OpenClaw):
@@ -150,9 +213,9 @@ cp -r SKILL.md references/ assets/ ~/.claude/skills/cascade/
 
 The agent will then be able to register, invoke, and claim skills via natural language.
 
-### Use via command line
+### Use via cast (Foundry CLI)
 
-All operations use `cast` (Foundry CLI). The contract is deployed at:
+For those who prefer raw contract interaction:
 
 ```
 Mainnet:  0x31bE4C6B5711913D818e377ebd809d4397FF3c84
@@ -314,6 +377,10 @@ Full review: [`SECURITY.md`](SECURITY.md)
 
 ```
 Cascade/
+├── sdk/
+│   ├── index.js                 # SDK library (createCascade)
+│   ├── cli.js                   # CLI interface
+│   └── abi.js                   # Contract ABI
 ├── src/
 │   ├── Cascade.sol              # Core: recursive royalty router
 │   └── aa/
@@ -344,6 +411,7 @@ Cascade/
 │   └── claim.md                 # Claim command templates
 ├── assets/
 │   └── networks.json            # Network configuration
+├── package.json                 # SDK dependencies
 ├── web/                         # Visualization (real mainnet data)
 ├── SECURITY.md                  # Security review
 ├── MAINNET_RESULT.md            # On-chain deployment proof
